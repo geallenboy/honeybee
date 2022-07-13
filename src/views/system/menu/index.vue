@@ -36,7 +36,7 @@
             >新增</el-button>
          </el-col>
          <el-col :span="1.5">
-            <el-button 
+            <el-button
                type="info"
                plain
                icon="Sort"
@@ -291,13 +291,14 @@
    </div>
 </template>
 
-<script setup name="Menu">
+<script setup name="Menu" lang="ts">
 import { addMenu, delMenu, getMenu, listMenu, updateMenu } from "@/api/system/menu";
-import SvgIcon from "@/components/SvgIcon";
-import IconSelect from "@/components/IconSelect";
+import SvgIcon from "@/components/SvgIcon/index.vue";
+import IconSelect from "@/components/SvgIcon/svgicon";
 import { ClickOutside as vClickOutside } from 'element-plus'
+import { getCurrentInstance, ref, reactive, toRefs, nextTick } from "vue";
 
-const { proxy } = getCurrentInstance();
+const { proxy }:any = getCurrentInstance();
 const { sys_show_hide, sys_normal_disable } = proxy.useDict("sys_show_hide", "sys_normal_disable");
 
 const menuList = ref([]);
@@ -305,11 +306,11 @@ const open = ref(false);
 const loading = ref(true);
 const showSearch = ref(true);
 const title = ref("");
-const menuOptions = ref([]);
+const menuOptions = ref<any[]>([]);
 const isExpandAll = ref(false);
 const refreshTable = ref(true);
 const showChooseIcon = ref(false);
-const iconSelectRef = ref(null);
+const iconSelectRef = ref<any>(null);
 
 const data = reactive({
   form: {},
@@ -324,7 +325,7 @@ const data = reactive({
   },
 });
 
-const { queryParams, form, rules } = toRefs(data);
+const { queryParams, form, rules }:any = toRefs(data);
 
 /** 查询菜单列表 */
 function getList() {
@@ -370,7 +371,7 @@ function showSelectIcon() {
   showChooseIcon.value = true;
 }
 /** 选择图标 */
-function selected(name) {
+function selected(name: any) {
   form.value.icon = name;
   showChooseIcon.value = false;
 }
@@ -388,7 +389,7 @@ function resetQuery() {
   handleQuery();
 }
 /** 新增按钮操作 */
-function handleAdd(row) {
+function handleAdd(row: { menuId: any; }|null) {
   reset();
   getTreeselect();
   if (row != null && row.menuId) {
@@ -408,7 +409,7 @@ function toggleExpandAll() {
   });
 }
 /** 修改按钮操作 */
-async function handleUpdate(row) {
+async function handleUpdate(row: { menuId: string; }) {
   reset();
   await getTreeselect();
   getMenu(row.menuId).then(response => {
@@ -419,7 +420,7 @@ async function handleUpdate(row) {
 }
 /** 提交按钮 */
 function submitForm() {
-  proxy.$refs["menuRef"].validate(valid => {
+  proxy.$refs["menuRef"].validate((valid: any) => {
     if (valid) {
       if (form.value.menuId != undefined) {
         updateMenu(form.value).then(response => {
@@ -438,7 +439,7 @@ function submitForm() {
   });
 }
 /** 删除按钮操作 */
-function handleDelete(row) {
+function handleDelete(row: { menuName: string; menuId: string; }) {
   proxy.$modal.confirm('是否确认删除名称为"' + row.menuName + '"的数据项?').then(function() {
     return delMenu(row.menuId);
   }).then(() => {

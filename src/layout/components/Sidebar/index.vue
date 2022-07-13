@@ -23,13 +23,15 @@
   </div>
 </template>
 
-<script setup>
-import Logo from './Logo'
-import SidebarItem from './SidebarItem'
+<script setup lang="ts">
+import Logo from './Logo.vue'
+import SidebarItem from './SidebarItem.vue'
 import variables from '@/assets/styles/variables.module.scss'
 import useAppStore from '@/store/modules/app'
 import useSettingsStore from '@/store/modules/settings'
 import usePermissionStore from '@/store/modules/permission'
+import { useRoute } from 'vue-router'
+import { computed } from 'vue'
 
 const route = useRoute();
 const appStore = useAppStore()

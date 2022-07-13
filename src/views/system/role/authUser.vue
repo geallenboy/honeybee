@@ -47,9 +47,9 @@
             >批量取消授权</el-button>
          </el-col>
          <el-col :span="1.5">
-            <el-button 
-               type="warning" 
-               plain 
+            <el-button
+               type="warning"
+               plain
                icon="Close"
                @click="handleClose"
             >关闭</el-button>
@@ -96,12 +96,14 @@
    </div>
 </template>
 
-<script setup name="AuthUser">
-import selectUser from "./selectUser";
+<script setup name="AuthUser" lang="ts">
+import selectUser from "./selectUser.vue";
 import { allocatedUserList, authUserCancel, authUserCancelAll } from "@/api/system/role";
+import { getCurrentInstance, ref, reactive } from "vue";
+import { useRoute } from "vue-router";
 
 const route = useRoute();
-const { proxy } = getCurrentInstance();
+const { proxy }:any = getCurrentInstance();
 const { sys_normal_disable } = proxy.useDict("sys_normal_disable");
 
 const userList = ref([]);
@@ -122,7 +124,7 @@ const queryParams = reactive({
 /** 查询授权用户列表 */
 function getList() {
   loading.value = true;
-  allocatedUserList(queryParams).then(response => {
+  allocatedUserList(queryParams).then((response:any) => {
     userList.value = response.rows;
     total.value = response.total;
     loading.value = false;
@@ -144,8 +146,8 @@ function resetQuery() {
   handleQuery();
 }
 // 多选框选中数据
-function handleSelectionChange(selection) {
-  userIds.value = selection.map(item => item.userId);
+function handleSelectionChange(selection: { map: (arg0: (item: any) => any) => never[]; length: any; }) {
+  userIds.value = selection.map((item: { userId: any; }) => item.userId);
   multiple.value = !selection.length;
 }
 /** 打开授权用户表弹窗 */
@@ -153,7 +155,7 @@ function openSelectUser() {
   proxy.$refs["selectRef"].show();
 }
 /** 取消授权按钮操作 */
-function cancelAuthUser(row) {
+function cancelAuthUser(row: { userName: string; userId: any; }) {
   proxy.$modal.confirm('确认要取消该用户"' + row.userName + '"角色吗？').then(function () {
     return authUserCancel({ userId: row.userId, roleId: queryParams.roleId });
   }).then(() => {
@@ -162,7 +164,7 @@ function cancelAuthUser(row) {
   }).catch(() => {});
 }
 /** 批量取消授权按钮操作 */
-function cancelAuthUserAll(row) {
+function cancelAuthUserAll(row: any) {
   const roleId = queryParams.roleId;
   const uIds = userIds.value.join(",");
   proxy.$modal.confirm("是否取消选中用户授权数据项?").then(function () {

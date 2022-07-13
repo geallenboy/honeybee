@@ -38,10 +38,11 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang='ts'>
 import { getToken } from "@/utils/auth";
+import { computed, getCurrentInstance, ref, watch } from "vue";
 
-const props = defineProps({
+const props:any = defineProps({
   modelValue: [String, Object, Array],
   // 数量限制
   limit: {
@@ -65,14 +66,13 @@ const props = defineProps({
   }
 });
 
-const { proxy } = getCurrentInstance();
-const emit = defineEmits();
+const { proxy }:any = getCurrentInstance();
 const number = ref(0);
-const uploadList = ref([]);
+const uploadList = ref<any[]>([]);
 const baseUrl = import.meta.env.VITE_APP_BASE_API;
 const uploadFileUrl = ref(import.meta.env.VITE_APP_BASE_API + "/common/upload"); // 上传的图片服务器地址
 const headers = ref({ Authorization: "Bearer " + getToken() });
-const fileList = ref([]);
+const fileList = ref<any[]>([]);
 const showTip = computed(
   () => props.isShowTip && (props.fileType || props.fileSize)
 );
@@ -83,7 +83,7 @@ watch(() => props.modelValue, val => {
     // 首先将值转为数组
     const list = Array.isArray(val) ? val : props.modelValue.split(',');
     // 然后将数组转为对象数组
-    fileList.value = list.map(item => {
+    fileList.value = list.map((item: { uid?: any; name?: string; url?: string; }) => {
       if (typeof item === "string") {
         item = { name: item, url: item };
       }
@@ -97,14 +97,14 @@ watch(() => props.modelValue, val => {
 },{ deep: true, immediate: true });
 
 // 上传前校检格式和大小
-function handleBeforeUpload(file) {
+function handleBeforeUpload(file: { name: string; type: unknown[]; size: number; }) {
   // 校检文件类型
   if (props.fileType.length) {
     let fileExtension = "";
     if (file.name.lastIndexOf(".") > -1) {
       fileExtension = file.name.slice(file.name.lastIndexOf(".") + 1);
     }
-    const isTypeOk = props.fileType.some((type) => {
+    const isTypeOk = props.fileType.some((type:any) => {
       if (file.type.indexOf(type) > -1) return true;
       if (fileExtension && fileExtension.indexOf(type) > -1) return true;
       return false;
@@ -133,30 +133,30 @@ function handleExceed() {
 }
 
 // 上传失败
-function handleUploadError(err) {
+function handleUploadError(err?: any) {
   proxy.$modal.msgError("上传文件失败");
 }
 
 // 上传成功回调
-function handleUploadSuccess(res, file) {
+function handleUploadSuccess(res: { fileName: any; }, file: any) {
   uploadList.value.push({ name: res.fileName, url: res.fileName });
   if (uploadList.value.length === number.value) {
-    fileList.value = fileList.value.filter(f => f.url !== undefined).concat(uploadList.value);
+    fileList.value = fileList.value.filter((f:any) => f.url !== undefined).concat(uploadList.value as never[]);
     uploadList.value = [];
     number.value = 0;
-    emit("update:modelValue", listToString(fileList.value));
+    defineEmits("update:modelValue", listToString(fileList.value));
     proxy.$modal.closeLoading();
   }
 }
 
 // 删除文件
-function handleDelete(index) {
+function handleDelete(index: number) {
   fileList.value.splice(index, 1);
-  emit("update:modelValue", listToString(fileList.value));
+  defineEmits("update:modelValue", listToString(fileList.value));
 }
 
 // 获取文件名称
-function getFileName(name) {
+function getFileName(name: string|string[]) {
   if (name.lastIndexOf("/") > -1) {
     return name.slice(name.lastIndexOf("/") + 1);
   } else {
@@ -165,7 +165,7 @@ function getFileName(name) {
 }
 
 // 对象转成指定字符串分隔
-function listToString(list, separator) {
+function listToString(list: any[], separator?: string) {
   let strs = "";
   separator = separator || ",";
   for (let i in list) {

@@ -1,10 +1,10 @@
 /**
 * v-copyText 复制文本内容
-* Copyright (c) 2022 ruoyi
+* Copyright (c) 2022
 */
 
 export default {
-  beforeMount(el, { value, arg }) {
+  beforeMount(el: { $copyCallback: (arg0: any) => void; $copyValue: any; addEventListener: (arg0: string, arg1: () => void) => void; $destroyCopy: () => any; removeEventListener: (arg0: string, arg1: () => void) => any; }, { value, arg }: any) {
     if (arg === "callback") {
       el.$copyCallback = value;
     } else {
@@ -21,9 +21,9 @@ export default {
   }
 }
 
-function copyTextToClipboard(input, { target = document.body } = {}) {
-  const element = document.createElement('textarea');
-  const previouslyFocusedElement = document.activeElement;
+function copyTextToClipboard(input: string | any[], { target = document.body } = {}) {
+  const element:any = document.createElement('textarea');
+  const previouslyFocusedElement:any = document.activeElement;
 
   element.value = input;
 
@@ -35,7 +35,7 @@ function copyTextToClipboard(input, { target = document.body } = {}) {
   element.style.left = '-9999px';
   element.style.fontSize = '12pt'; // Prevent zooming on iOS
 
-  const selection = document.getSelection();
+  const selection:any = document.getSelection();
   const originalRange = selection.rangeCount > 0 && selection.getRangeAt(0);
 
   target.append(element);

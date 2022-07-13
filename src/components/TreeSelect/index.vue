@@ -1,3 +1,5 @@
+
+
 <template>
   <div class="el-tree-select">
     <el-select
@@ -28,9 +30,9 @@
   </div>
 </template>
 
-<script setup>
-
-const { proxy } = getCurrentInstance();
+<script setup lang="ts">
+import { computed, getCurrentInstance, nextTick, onMounted, ref, watch } from "vue";
+const { proxy }:any = getCurrentInstance();
 
 const props = defineProps({
   /* 配置项 */
@@ -77,11 +79,11 @@ const valueId = computed({
   }
 });
 const valueTitle = ref('');
-const defaultExpandedKey = ref([]);
+const defaultExpandedKey = ref<any[]>([]);
 
 function initHandle() {
   nextTick(() => {
-    const selectedValue = valueId.value;
+    const selectedValue:any = valueId.value;
     if(selectedValue !== null && typeof (selectedValue) !== 'undefined') {
       const node = proxy.$refs.selectTree.getNode(selectedValue)
       if (node) {
@@ -94,17 +96,17 @@ function initHandle() {
     }
   })
 }
-function handleNodeClick(node) {
+function handleNodeClick(node: any) {
   valueTitle.value = node[props.objMap.label]
   valueId.value = node[props.objMap.value];
   defaultExpandedKey.value = [];
   proxy.$refs.treeSelect.blur()
   selectFilterData('')
 }
-function selectFilterData(val) {
+function selectFilterData(val: string) {
   proxy.$refs.selectTree.filter(val)
 }
-function filterNode(value, data) {
+function filterNode(value: any, data: { [x: string]: string|any[]; }) {
   if (!value) return true
   return data[props.objMap['label']].indexOf(value) !== -1
 }

@@ -27,10 +27,11 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { isExternal } from '@/utils/validate'
-import AppLink from './Link'
+import AppLink from './Link.vue'
 import { getNormalPath } from '@/utils/main'
+import { ref } from 'vue';
 
 const props = defineProps({
   // route object
@@ -50,11 +51,11 @@ const props = defineProps({
 
 const onlyOneChild = ref({});
 
-function hasOneShowingChild(children = [], parent) {
+function hasOneShowingChild(children = [], parent: {}) {
   if (!children) {
     children = [];
   }
-  const showingChildren = children.filter(item => {
+  const showingChildren = children.filter((item:any) => {
     if (item.hidden) {
       return false
     } else {
@@ -78,7 +79,7 @@ function hasOneShowingChild(children = [], parent) {
   return false
 };
 
-function resolvePath(routePath, routeQuery) {
+function resolvePath(routePath: string, routeQuery: string) {
   if (isExternal(routePath)) {
     return routePath
   }
@@ -92,7 +93,7 @@ function resolvePath(routePath, routeQuery) {
   return getNormalPath(props.basePath + '/' + routePath)
 }
 
-function hasTitle(title){
+function hasTitle(title: string|any[]){
   if (title.length > 5) {
     return title;
   } else {

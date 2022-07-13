@@ -27,15 +27,17 @@
   </el-menu>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { constantRoutes } from "@/router"
 import { isHttp } from '@/utils/validate'
 import useAppStore from '@/store/modules/app'
 import useSettingsStore from '@/store/modules/settings'
 import usePermissionStore from '@/store/modules/permission'
+import { computed, onBeforeUnmount, onMounted, ref } from "vue"
+import { useRoute, useRouter } from "vue-router"
 
 // 顶部栏初始数
-const visibleNumber = ref(null);
+const visibleNumber = ref<any>(null);
 // 当前激活菜单的 index
 const currentIndex = ref(null);
 // 隐藏侧边栏路由
@@ -44,7 +46,7 @@ const hideList = ['/index', '/user/profile'];
 const appStore = useAppStore()
 const settingsStore = useSettingsStore()
 const permissionStore = usePermissionStore()
-const route = useRoute();
+const route:any = useRoute();
 const router = useRouter();
 
 // 主题颜色
@@ -54,8 +56,8 @@ const routers = computed(() => permissionStore.topbarRouters);
 
 // 顶部显示菜单
 const topMenus = computed(() => {
-  let topMenus = [];
-  routers.value.map((menu) => {
+  let topMenus:any[] = [];
+  routers.value.map((menu:any) => {
     if (menu.hidden !== true) {
       // 兼容顶部栏一级菜单内部跳转
       if (menu.path === "/") {
@@ -70,8 +72,8 @@ const topMenus = computed(() => {
 
 // 设置子路由
 const childrenMenus = computed(() => {
-  let childrenMenus = [];
-  routers.value.map((router) => {
+  let childrenMenus:any = [];
+  routers.value.map((router:any) => {
     for (let item in router.children) {
       if (router.children[item].parentPath === undefined) {
         if(router.path === "/") {
@@ -107,12 +109,12 @@ const activeMenu = computed(() => {
 
 function setVisibleNumber() {
   const width = document.body.getBoundingClientRect().width / 3;
-  visibleNumber.value = parseInt(width / 85);
+  visibleNumber.value = width / 85;
 }
 
-function handleSelect(key, keyPath) {
+function handleSelect(key: any, keyPath: any) {
   currentIndex.value = key;
-  const route = routers.value.find(item => item.path === key);
+  const route = routers.value.find((item:any) => item.path === key);
   if (isHttp(key)) {
     // http(s):// 路径新窗口打开
     window.open(key, "_blank");
@@ -127,10 +129,10 @@ function handleSelect(key, keyPath) {
   }
 }
 
-function activeRoutes(key) {
-  let routes = [];
+function activeRoutes(key: string) {
+  let routes:any[] = [];
   if (childrenMenus.value && childrenMenus.value.length > 0) {
-    childrenMenus.value.map((item) => {
+    childrenMenus.value.map((item:any) => {
       if (key == item.parentPath || (key == "index" && "" == item.path)) {
         routes.push(item);
       }

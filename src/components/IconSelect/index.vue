@@ -19,11 +19,12 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { ref } from 'vue';
 import icons from './requireIcons'
 
 const iconName = ref('');
-const iconList = ref(icons);
+const iconList = ref<any[]>(icons);
 const emit = defineEmits(['selected']);
 
 function filterIcons() {
@@ -33,7 +34,7 @@ function filterIcons() {
   }
 }
 
-function selectedIcon(name) {
+function selectedIcon(name: any) {
   emit('selected', name)
   document.body.click()
 }

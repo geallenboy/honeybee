@@ -155,10 +155,11 @@
    </div>
 </template>
 
-<script setup name="Dept">
+<script setup name="Dept" lang="ts">
 import { listDept, getDept, delDept, addDept, updateDept, listDeptExcludeChild } from "@/api/system/dept";
+import { getCurrentInstance, ref, reactive, toRefs, nextTick } from "vue";
 
-const { proxy } = getCurrentInstance();
+const { proxy }:any = getCurrentInstance();
 const { sys_normal_disable } = proxy.useDict("sys_normal_disable");
 
 const deptList = ref([]);
@@ -185,7 +186,7 @@ const data = reactive({
   },
 });
 
-const { queryParams, form, rules } = toRefs(data);
+const { queryParams, form, rules }:any = toRefs(data);
 
 /** 查询部门列表 */
 function getList() {
@@ -224,7 +225,7 @@ function resetQuery() {
   handleQuery();
 }
 /** 新增按钮操作 */
-function handleAdd(row) {
+function handleAdd(row: { deptId: any; }|undefined) {
   reset();
   listDept().then(response => {
     deptOptions.value = proxy.handleTree(response.data, "deptId");
@@ -244,7 +245,7 @@ function toggleExpandAll() {
   });
 }
 /** 修改按钮操作 */
-function handleUpdate(row) {
+function handleUpdate(row: { deptId: string; }) {
   reset();
   listDeptExcludeChild(row.deptId).then(response => {
     deptOptions.value = proxy.handleTree(response.data, "deptId");
@@ -257,7 +258,7 @@ function handleUpdate(row) {
 }
 /** 提交按钮 */
 function submitForm() {
-  proxy.$refs["deptRef"].validate(valid => {
+  proxy.$refs["deptRef"].validate((valid: any) => {
     if (valid) {
       if (form.value.deptId != undefined) {
         updateDept(form.value).then(response => {
@@ -276,7 +277,7 @@ function submitForm() {
   });
 }
 /** 删除按钮操作 */
-function handleDelete(row) {
+function handleDelete(row: { deptName: string; deptId: string; }) {
   proxy.$modal.confirm('是否确认删除名称为"' + row.deptName + '"的数据项?').then(function() {
     return delDept(row.deptId);
   }).then(() => {

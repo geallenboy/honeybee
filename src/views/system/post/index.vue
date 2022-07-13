@@ -152,10 +152,11 @@
    </div>
 </template>
 
-<script setup name="Post">
+<script setup name="Post" lang="ts">
 import { listPost, addPost, delPost, getPost, updatePost } from "@/api/system/post";
+import { getCurrentInstance, reactive, ref, toRefs } from "vue";
 
-const { proxy } = getCurrentInstance();
+const { proxy }:any = getCurrentInstance();
 const { sys_normal_disable } = proxy.useDict("sys_normal_disable");
 
 const postList = ref([]);
@@ -184,12 +185,12 @@ const data = reactive({
   }
 });
 
-const { queryParams, form, rules } = toRefs(data);
+const { queryParams, form, rules }:any = toRefs(data);
 
 /** 查询岗位列表 */
 function getList() {
   loading.value = true;
-  listPost(queryParams.value).then(response => {
+  listPost(queryParams.value).then((response:any) => {
     postList.value = response.rows;
     total.value = response.total;
     loading.value = false;
@@ -223,8 +224,8 @@ function resetQuery() {
   handleQuery();
 }
 /** 多选框选中数据 */
-function handleSelectionChange(selection) {
-  ids.value = selection.map(item => item.postId);
+function handleSelectionChange(selection: { map: (arg0: (item: any) => any) => never[]; length: number; }) {
+  ids.value = selection.map((item: { postId: any; }) => item.postId);
   single.value = selection.length != 1;
   multiple.value = !selection.length;
 }
@@ -235,9 +236,9 @@ function handleAdd() {
   title.value = "添加岗位";
 }
 /** 修改按钮操作 */
-function handleUpdate(row) {
+function handleUpdate(row: { postId: never[]; }) {
   reset();
-  const postId = row.postId || ids.value;
+  const postId:any = row.postId || ids.value;
   getPost(postId).then(response => {
     form.value = response.data;
     open.value = true;
@@ -246,7 +247,7 @@ function handleUpdate(row) {
 }
 /** 提交按钮 */
 function submitForm() {
-  proxy.$refs["postRef"].validate(valid => {
+  proxy.$refs["postRef"].validate((valid: any) => {
     if (valid) {
       if (form.value.postId != undefined) {
         updatePost(form.value).then(response => {
@@ -265,8 +266,8 @@ function submitForm() {
   });
 }
 /** 删除按钮操作 */
-function handleDelete(row) {
-  const postIds = row.postId || ids.value;
+function handleDelete(row: { postId: never[]; }) {
+  const postIds:any = row.postId || ids.value;
   proxy.$modal.confirm('是否确认删除岗位编号为"' + postIds + '"的数据项？').then(function() {
     return delPost(postIds);
   }).then(() => {

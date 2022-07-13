@@ -86,9 +86,9 @@
             >导出</el-button>
          </el-col>
          <el-col :span="1.5">
-            <el-button 
-               type="warning" 
-               plain 
+            <el-button
+               type="warning"
+               plain
                icon="Close"
                @click="handleClose"
             >关闭</el-button>
@@ -175,11 +175,13 @@
    </div>
 </template>
 
-<script setup name="JobLog">
+<script setup name="JobLog" lang="ts">
 import { getJob } from "@/api/monitor/job";
 import { listJobLog, delJobLog, cleanJobLog } from "@/api/monitor/jobLog";
+import { getCurrentInstance, reactive, ref, toRefs } from "vue";
+import { useRoute } from "vue-router";
 
-const { proxy } = getCurrentInstance();
+const { proxy }:any = getCurrentInstance();
 const { sys_common_status, sys_job_group } = proxy.useDict("sys_common_status", "sys_job_group");
 
 const jobLogList = ref([]);
@@ -203,12 +205,12 @@ const data = reactive({
   }
 });
 
-const { queryParams, form, rules } = toRefs(data);
+const { queryParams, form, rules }:any = toRefs(data);
 
 /** 查询调度日志列表 */
 function getList() {
   loading.value = true;
-  listJobLog(proxy.addDateRange(queryParams.value, dateRange.value)).then(response => {
+  listJobLog(proxy.addDateRange(queryParams.value, dateRange.value)).then((response:any) => {
     jobLogList.value = response.rows;
     total.value = response.total;
     loading.value = false;
@@ -231,17 +233,17 @@ function resetQuery() {
   handleQuery();
 }
 // 多选框选中数据
-function handleSelectionChange(selection) {
+function handleSelectionChange(selection: { map: (arg0: (item: any) => any) => never[]; length: any; }) {
   ids.value = selection.map(item => item.jobLogId);
   multiple.value = !selection.length;
 }
 /** 详细按钮操作 */
-function handleView(row) {
+function handleView(row: any) {
   open.value = true;
   form.value = row;
 }
 /** 删除按钮操作 */
-function handleDelete(row) {
+function handleDelete(row: any) {
   proxy.$modal.confirm('是否确认删除调度日志编号为"' + ids.value + '"的数据项?').then(function () {
     return delJobLog(ids.value);
   }).then(() => {
@@ -266,7 +268,7 @@ function handleExport() {
 }
 
 (() => {
-  const jobId = route.query.jobId;
+  const jobId:any = route.query.jobId;
   if (jobId !== undefined && jobId != 0) {
     getJob(jobId).then(response => {
       queryParams.value.jobName = response.data.jobName;

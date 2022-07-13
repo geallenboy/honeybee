@@ -174,10 +174,11 @@
    </div>
 </template>
 
-<script setup name="Config">
+<script setup name="Config" lang="ts">
 import { listConfig, getConfig, delConfig, addConfig, updateConfig, refreshCache } from "@/api/system/config";
+import { getCurrentInstance, ref, reactive, toRefs } from "vue";
 
-const { proxy } = getCurrentInstance();
+const { proxy }:any = getCurrentInstance();
 const { sys_yes_no } = proxy.useDict("sys_yes_no");
 
 const configList = ref([]);
@@ -207,12 +208,12 @@ const data = reactive({
   }
 });
 
-const { queryParams, form, rules } = toRefs(data);
+const { queryParams, form, rules }:any = toRefs(data);
 
 /** 查询参数列表 */
 function getList() {
   loading.value = true;
-  listConfig(proxy.addDateRange(queryParams.value, dateRange.value)).then(response => {
+  listConfig(proxy.addDateRange(queryParams.value, dateRange.value)).then((response:any) => {
     configList.value = response.rows;
     total.value = response.total;
     loading.value = false;
@@ -247,7 +248,7 @@ function resetQuery() {
   handleQuery();
 }
 /** 多选框选中数据 */
-function handleSelectionChange(selection) {
+function handleSelectionChange(selection: { map: (arg0: (item: any) => any) => never[]; length: number; }) {
   ids.value = selection.map(item => item.configId);
   single.value = selection.length != 1;
   multiple.value = !selection.length;
@@ -259,9 +260,9 @@ function handleAdd() {
   title.value = "添加参数";
 }
 /** 修改按钮操作 */
-function handleUpdate(row) {
+function handleUpdate(row: { configId: never[]; }) {
   reset();
-  const configId = row.configId || ids.value;
+  const configId:any = row.configId || ids.value;
   getConfig(configId).then(response => {
     form.value = response.data;
     open.value = true;
@@ -270,7 +271,7 @@ function handleUpdate(row) {
 }
 /** 提交按钮 */
 function submitForm() {
-  proxy.$refs["configRef"].validate(valid => {
+  proxy.$refs["configRef"].validate((valid: any) => {
     if (valid) {
       if (form.value.configId != undefined) {
         updateConfig(form.value).then(response => {
@@ -289,8 +290,8 @@ function submitForm() {
   });
 }
 /** 删除按钮操作 */
-function handleDelete(row) {
-  const configIds = row.configId || ids.value;
+function handleDelete(row: { configId: never[]; }) {
+  const configIds:any = row.configId || ids.value;
   proxy.$modal.confirm('是否确认删除参数编号为"' + configIds + '"的数据项？').then(function () {
     return delConfig(configIds);
   }).then(() => {

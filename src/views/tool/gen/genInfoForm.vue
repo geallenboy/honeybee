@@ -116,7 +116,7 @@
         </el-form-item>
       </el-col>
     </el-row>
-    
+
     <template v-if="info.tplCategory == 'tree'">
       <h4 class="form-header">其他信息</h4>
       <el-row v-show="info.tplCategory == 'tree'">
@@ -222,23 +222,19 @@
   </el-form>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { listMenu } from "@/api/system/menu";
 
-const subColumns = ref([]);
-const menuOptions = ref({});
-const { proxy } = getCurrentInstance();
+import { watch,ref, getCurrentInstance } from "vue";
 
-const props = defineProps({
-  info: {
-    type: Object,
-    default: null
-  },
-  tables: {
-    type: Array,
-    default: null
-  }
-});
+const subColumns = ref<any[]>([]);
+const menuOptions = ref<any>({});
+const { proxy }:any = getCurrentInstance();
+
+const props = defineProps<{
+  info: any,
+  tables: any
+}>();
 
 // 表单校验
 const rules = ref({
@@ -248,16 +244,16 @@ const rules = ref({
   businessName: [{ required: true, message: "请输入生成业务名", trigger: "blur" }],
   functionName: [{ required: true, message: "请输入生成功能名", trigger: "blur" }]
 });
-function subSelectChange(value) {
+function subSelectChange(value: any) {
   props.info.subTableFkName = "";
 }
-function tplSelectChange(value) {
+function tplSelectChange(value: string) {
   if (value !== "sub") {
     props.info.subTableName = "";
     props.info.subTableFkName = "";
   }
 }
-function setSubTableColumns(value) {
+function setSubTableColumns(value: string) {
   for (var item in props.tables) {
     const name = props.tables[item].tableName;
     if (value === name) {

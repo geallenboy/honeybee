@@ -1,3 +1,5 @@
+
+
 <template>
   <div class="top-right-btn">
     <el-row>
@@ -22,7 +24,8 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { ref } from "vue";
 const props = defineProps({
   showSearch: {
     type: Boolean,
@@ -53,7 +56,7 @@ function refresh() {
 }
 
 // 右侧列表元素变化
-function dataChange(data) {
+function dataChange(data: string|any[]) {
   for (let item in props.columns) {
     const key = props.columns[item].key;
     props.columns[item].visible = !data.includes(key);

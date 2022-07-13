@@ -348,13 +348,16 @@
    </div>
 </template>
 
-<script setup name="User">
+<script setup name="User" lang="ts">
 import { getToken } from "@/utils/auth";
 import { treeselect } from "@/api/system/dept";
 import { changeUserStatus, listUser, resetUserPwd, delUser, getUser, updateUser, addUser } from "@/api/system/user";
 
+import { watch,getCurrentInstance, ref, reactive, toRefs } from "vue";
+import { useRouter } from "vue-router";
+
 const router = useRouter();
-const { proxy } = getCurrentInstance();
+const { proxy }:any = getCurrentInstance();
 const { sys_normal_disable, sys_user_sex } = proxy.useDict("sys_normal_disable", "sys_user_sex");
 
 const userList = ref([]);
@@ -420,7 +423,7 @@ const data = reactive({
 const { queryParams, form, rules } = toRefs(data);
 
 /** 通过条件过滤节点  */
-const filterNode = (value, data) => {
+const filterNode = (value: any, data: { label: string | any[]; }) => {
   if (!value) return true;
   return data.label.indexOf(value) !== -1;
 };
@@ -437,14 +440,14 @@ function getTreeselect() {
 /** 查询用户列表 */
 function getList() {
   loading.value = true;
-  listUser(proxy.addDateRange(queryParams.value, dateRange.value)).then(res => {
+  listUser(proxy.addDateRange(queryParams.value, dateRange.value)).then((res:any) => {
     loading.value = false;
     userList.value = res.rows;
     total.value = res.total;
   });
 };
 /** 节点单击事件 */
-function handleNodeClick(data) {
+function handleNodeClick(data: { id: undefined; }) {
   queryParams.value.deptId = data.id;
   handleQuery();
 };
@@ -460,8 +463,8 @@ function resetQuery() {
   handleQuery();
 };
 /** 删除按钮操作 */
-function handleDelete(row) {
-  const userIds = row.userId || ids.value;
+function handleDelete(row: { userId: never[]; }) {
+  const userIds:any = row.userId || ids.value;
   proxy.$modal.confirm('是否确认删除用户编号为"' + userIds + '"的数据项？').then(function () {
     return delUser(userIds);
   }).then(() => {
@@ -476,7 +479,7 @@ function handleExport() {
   },`user_${new Date().getTime()}.xlsx`);
 };
 /** 用户状态修改  */
-function handleStatusChange(row) {
+function handleStatusChange(row: { status: string; userName: string; userId: any; }) {
   let text = row.status === "0" ? "启用" : "停用";
   proxy.$modal.confirm('确认要"' + text + '""' + row.userName + '"用户吗?').then(function () {
     return changeUserStatus(row.userId, row.status);
@@ -487,7 +490,7 @@ function handleStatusChange(row) {
   });
 };
 /** 更多操作 */
-function handleCommand(command, row) {
+function handleCommand(command: any, row: any) {
   switch (command) {
     case "handleResetPwd":
       handleResetPwd(row);
@@ -500,27 +503,27 @@ function handleCommand(command, row) {
   }
 };
 /** 跳转角色分配 */
-function handleAuthRole(row) {
+function handleAuthRole(row: { userId: any; }) {
   const userId = row.userId;
   router.push("/system/user-auth/role/" + userId);
 };
 /** 重置密码按钮操作 */
-function handleResetPwd(row) {
+function handleResetPwd(row: { userName: string; userId: any; }) {
   proxy.$prompt('请输入"' + row.userName + '"的新密码', "提示", {
     confirmButtonText: "确定",
     cancelButtonText: "取消",
     closeOnClickModal: false,
     inputPattern: /^.{5,20}$/,
     inputErrorMessage: "用户密码长度必须介于 5 和 20 之间",
-  }).then(({ value }) => {
+  }).then(({ value }:any) => {
     resetUserPwd(row.userId, value).then(response => {
       proxy.$modal.msgSuccess("修改成功，新密码是：" + value);
     });
   }).catch(() => {});
 };
 /** 选择条数  */
-function handleSelectionChange(selection) {
-  ids.value = selection.map(item => item.userId);
+function handleSelectionChange(selection: { map: (arg0: (item: any) => any) => never[]; length: number; }) {
+  ids.value = selection.map((item: { userId: any; }) => item.userId);
   single.value = selection.length != 1;
   multiple.value = !selection.length;
 };
@@ -535,11 +538,11 @@ function importTemplate() {
   }, `user_template_${new Date().getTime()}.xlsx`);
 };
 /**文件上传中处理 */
-const handleFileUploadProgress = (event, file, fileList) => {
+const handleFileUploadProgress = (event: any, file: any, fileList: any) => {
   upload.isUploading = true;
 };
 /** 文件上传成功处理 */
-const handleFileSuccess = (response, file, fileList) => {
+const handleFileSuccess = (response: { msg: string; }, file: any, fileList: any) => {
   upload.open = false;
   upload.isUploading = false;
   proxy.$refs["uploadRef"].handleRemove(file);
@@ -595,7 +598,7 @@ function handleAdd() {
   });
 };
 /** 修改按钮操作 */
-function handleUpdate(row) {
+function handleUpdate(row: { userId: never[]; }) {
   reset();
   initTreeData();
   const userId = row.userId || ids.value;
@@ -612,7 +615,7 @@ function handleUpdate(row) {
 };
 /** 提交按钮 */
 function submitForm() {
-  proxy.$refs["userRef"].validate(valid => {
+  proxy.$refs["userRef"].validate((valid: any) => {
     if (valid) {
       if (form.value.userId != undefined) {
         updateUser(form.value).then(response => {

@@ -78,7 +78,7 @@
 
 </template>
 
-<script setup>
+<script setup lang="ts">
 import variables from '@/assets/styles/variables.module.scss'
 import originElementPlus from 'element-plus/theme-chalk/index.css'
 import axios from 'axios'
@@ -87,8 +87,9 @@ import { useDynamicTitle } from '@/utils/dynamicTitle'
 import useAppStore from '@/store/modules/app'
 import useSettingsStore from '@/store/modules/settings'
 import usePermissionStore from '@/store/modules/permission'
+import { computed, getCurrentInstance, ref } from 'vue'
 
-const { proxy } = getCurrentInstance();
+const { proxy }:any = getCurrentInstance();
 const appStore = useAppStore()
 const settingsStore = useSettingsStore()
 const permissionStore = usePermissionStore()
@@ -140,11 +141,11 @@ const dynamicTitle = computed({
   }
 })
 
-function themeChange(val) {
+function themeChange(val: any) {
   settingsStore.changeSetting({ key: 'theme', value: val })
   theme.value = val;
 }
-function handleTheme(val) {
+function handleTheme(val: any) {
   settingsStore.changeSetting({ key: 'sideTheme', value: val })
   sideTheme.value = val;
 }

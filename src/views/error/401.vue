@@ -25,10 +25,11 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import errImage from "@/assets/401_images/401.gif";
+import { getCurrentInstance, ref } from "vue";
 
-let { proxy } = getCurrentInstance();
+let { proxy }:any = getCurrentInstance();
 
 const errGif = ref(errImage + "?" + +new Date());
 

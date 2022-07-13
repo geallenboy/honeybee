@@ -3,11 +3,11 @@
     <el-form ref="registerRef" :model="registerForm" :rules="registerRules" class="register-form">
       <h3 class="title">若依后台管理系统</h3>
       <el-form-item prop="username">
-        <el-input 
-          v-model="registerForm.username" 
-          type="text" 
-          size="large" 
-          auto-complete="off" 
+        <el-input
+          v-model="registerForm.username"
+          type="text"
+          size="large"
+          auto-complete="off"
           placeholder="账号"
         >
           <template #prefix><svg-icon icon-class="user" class="el-input__icon input-icon" /></template>
@@ -17,7 +17,7 @@
         <el-input
           v-model="registerForm.password"
           type="password"
-          size="large" 
+          size="large"
           auto-complete="off"
           placeholder="密码"
           @keyup.enter="handleRegister"
@@ -29,7 +29,7 @@
         <el-input
           v-model="registerForm.confirmPassword"
           type="password"
-          size="large" 
+          size="large"
           auto-complete="off"
           placeholder="确认密码"
           @keyup.enter="handleRegister"
@@ -39,7 +39,7 @@
       </el-form-item>
       <el-form-item prop="code" v-if="captchaOnOff">
         <el-input
-          size="large" 
+          size="large"
           v-model="registerForm.code"
           auto-complete="off"
           placeholder="验证码"
@@ -55,7 +55,7 @@
       <el-form-item style="width:100%;">
         <el-button
           :loading="loading"
-          size="large" 
+          size="large"
           type="primary"
           style="width:100%;"
           @click.prevent="handleRegister"
@@ -70,17 +70,19 @@
     </el-form>
     <!--  底部  -->
     <div class="el-register-footer">
-      <span>Copyright © 2018-2022 ruoyi.vip All Rights Reserved.</span>
+      <span>Copyright © 2018-2022  All Rights Reserved.</span>
     </div>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ElMessageBox } from "element-plus";
 import { getCodeImg, register } from "@/api/login";
+import { getCurrentInstance, ref } from "vue";
+import { useRouter } from "vue-router";
 
 const router = useRouter();
-const { proxy } = getCurrentInstance();
+const { proxy }:any = getCurrentInstance();
 
 const registerForm = ref({
   username: "",
@@ -90,7 +92,7 @@ const registerForm = ref({
   uuid: ""
 });
 
-const equalToPassword = (rule, value, callback) => {
+const equalToPassword = (rule: any, value: string, callback: (arg0?: Error | undefined) => void) => {
   if (registerForm.value.password !== value) {
     callback(new Error("两次输入的密码不一致"));
   } else {
@@ -119,7 +121,7 @@ const loading = ref(false);
 const captchaOnOff = ref(true);
 
 function handleRegister() {
-  proxy.$refs.registerRef.validate(valid => {
+  proxy.$refs.registerRef.validate((valid:any) => {
     if (valid) {
       loading.value = true;
       register(registerForm.value).then(res => {
@@ -141,7 +143,7 @@ function handleRegister() {
 }
 
 function getCode() {
-  getCodeImg().then(res => {
+  getCodeImg().then((res:any) => {
     captchaOnOff.value = res.captchaOnOff === undefined ? true : res.captchaOnOff;
     if (captchaOnOff.value) {
       codeUrl.value = "data:image/gif;base64," + res.img;

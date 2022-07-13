@@ -48,14 +48,15 @@
   </el-dialog>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { listDbTable, importTable } from "@/api/tool/gen";
+import { ref, getCurrentInstance, reactive } from "vue";
 
 const total = ref(0);
 const visible = ref(false);
 const tables = ref([]);
 const dbTableList = ref([]);
-const { proxy } = getCurrentInstance();
+const { proxy }:any = getCurrentInstance();
 
 const queryParams = reactive({
   pageNum: 1,
@@ -72,16 +73,16 @@ function show() {
   visible.value = true;
 }
 /** 单击选择行 */
-function clickRow(row) {
+function clickRow(row: any) {
   proxy.$refs.table.toggleRowSelection(row);
 }
 /** 多选框选中数据 */
-function handleSelectionChange(selection) {
+function handleSelectionChange(selection: { map: (arg0: (item: any) => any) => never[]; }) {
   tables.value = selection.map(item => item.tableName);
 }
 /** 查询表数据 */
 function getList() {
-  listDbTable(queryParams).then(res => {
+  listDbTable(queryParams).then((res:any) => {
     dbTableList.value = res.rows;
     total.value = res.total;
   });
@@ -103,7 +104,7 @@ function handleImportTable() {
     proxy.$modal.msgError("请选择要导入的表");
     return;
   }
-  importTable({ tables: tableNames }).then(res => {
+  importTable({ tables: tableNames }).then((res:any) => {
     proxy.$modal.msgSuccess(res.msg);
     if (res.code === 200) {
       visible.value = false;

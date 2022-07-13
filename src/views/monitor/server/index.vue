@@ -169,11 +169,12 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { getServer } from '@/api/monitor/server'
+import { ref, getCurrentInstance } from 'vue';
 
 const server = ref([]);
-const { proxy } = getCurrentInstance();
+const { proxy }:any = getCurrentInstance();
 
 function getList() {
   proxy.$modal.loading("正在加载服务监控数据，请稍候！");

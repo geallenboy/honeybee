@@ -171,10 +171,11 @@
    </div>
 </template>
 
-<script setup name="Notice">
+<script setup name="Notice" lang="ts">
 import { listNotice, getNotice, delNotice, addNotice, updateNotice } from "@/api/system/notice";
+import { getCurrentInstance, ref, reactive, toRefs } from "vue";
 
-const { proxy } = getCurrentInstance();
+const { proxy }:any = getCurrentInstance();
 const { sys_notice_status, sys_notice_type } = proxy.useDict("sys_notice_status", "sys_notice_type");
 
 const noticeList = ref([]);
@@ -202,12 +203,12 @@ const data = reactive({
   },
 });
 
-const { queryParams, form, rules } = toRefs(data);
+const { queryParams, form, rules }:any = toRefs(data);
 
 /** 查询公告列表 */
 function getList() {
   loading.value = true;
-  listNotice(queryParams.value).then(response => {
+  listNotice(queryParams.value).then((response:any) => {
     noticeList.value = response.rows;
     total.value = response.total;
     loading.value = false;
@@ -240,8 +241,8 @@ function resetQuery() {
   handleQuery();
 }
 /** 多选框选中数据 */
-function handleSelectionChange(selection) {
-  ids.value = selection.map(item => item.noticeId);
+function handleSelectionChange(selection: { map: (arg0: (item: any) => any) => never[]; length: number; }) {
+  ids.value = selection.map((item: { noticeId: any; }) => item.noticeId);
   single.value = selection.length != 1;
   multiple.value = !selection.length;
 }
@@ -252,9 +253,9 @@ function handleAdd() {
   title.value = "添加公告";
 }
 /**修改按钮操作 */
-function handleUpdate(row) {
+function handleUpdate(row: { noticeId: never[]; }) {
   reset();
-  const noticeId = row.noticeId || ids.value;
+  const noticeId:any = row.noticeId || ids.value;
   getNotice(noticeId).then(response => {
     form.value = response.data;
     open.value = true;
@@ -263,7 +264,7 @@ function handleUpdate(row) {
 }
 /** 提交按钮 */
 function submitForm() {
-  proxy.$refs["noticeRef"].validate(valid => {
+  proxy.$refs["noticeRef"].validate((valid: any) => {
     if (valid) {
       if (form.value.noticeId != undefined) {
         updateNotice(form.value).then(response => {
@@ -282,8 +283,8 @@ function submitForm() {
   });
 }
 /** 删除按钮操作 */
-function handleDelete(row) {
-  const noticeIds = row.noticeId || ids.value
+function handleDelete(row: { noticeId: never[]; }) {
+  const noticeIds:any = row.noticeId || ids.value
   proxy.$modal.confirm('是否确认删除公告编号为"' + noticeIds + '"的数据项？').then(function() {
     return delNotice(noticeIds);
   }).then(() => {

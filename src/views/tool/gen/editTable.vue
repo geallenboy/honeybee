@@ -126,21 +126,23 @@
   </el-card>
 </template>
 
-<script setup name="GenEdit">
+<script setup name="GenEdit" lang="ts">
 import { getGenTable, updateGenTable } from "@/api/tool/gen";
 import { optionselect as getDictOptionselect } from "@/api/system/dict/type";
-import basicInfoForm from "./basicInfoForm";
-import genInfoForm from "./genInfoForm";
+import basicInfoForm from "./basicInfoForm.vue";
+import genInfoForm from "./genInfoForm.vue";
+import { getCurrentInstance, ref } from "vue";
+import { useRoute } from "vue-router";
 
 const route = useRoute();
-const { proxy } = getCurrentInstance();
+const { proxy }:any = getCurrentInstance();
 
 const activeName = ref("columnInfo");
 const tableHeight = ref(document.documentElement.scrollHeight - 245 + "px");
 const tables = ref([]);
 const columns = ref([]);
-const dictOptions = ref([]);
-const info = ref({});
+const dictOptions = ref<any>([]);
+const info = ref<any>({});
 
 /** 提交按钮 */
 function submitForm() {
@@ -149,7 +151,7 @@ function submitForm() {
   Promise.all([basicForm, genForm].map(getFormPromise)).then(res => {
     const validateResult = res.every(item => !!item);
     if (validateResult) {
-      const genTable = Object.assign({}, info.value);
+      const genTable:any = Object.assign({}, info.value);
       genTable.columns = columns.value;
       genTable.params = {
         treeCode: info.value.treeCode,
@@ -157,7 +159,7 @@ function submitForm() {
         treeParentCode: info.value.treeParentCode,
         parentMenuId: info.value.parentMenuId
       };
-      updateGenTable(genTable).then(res => {
+      updateGenTable(genTable).then((res:any) => {
         proxy.$modal.msgSuccess(res.msg);
         if (res.code === 200) {
           close();
@@ -168,9 +170,9 @@ function submitForm() {
     }
   });
 }
-function getFormPromise(form) {
+function getFormPromise(form: { validate: (arg0: (res: any) => void) => void; }) {
   return new Promise(resolve => {
-    form.validate(res => {
+    form.validate((res:any) => {
       resolve(res);
     });
   });
@@ -181,7 +183,7 @@ function close() {
 }
 
 (() => {
-  const tableId = route.params && route.params.tableId;
+  const tableId:any = route.params && route.params.tableId;
   if (tableId) {
     // 获取表详细信息
     getGenTable(tableId).then(res => {

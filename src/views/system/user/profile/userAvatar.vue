@@ -50,21 +50,22 @@
   </el-dialog>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import "vue-cropper/dist/index.css";
 import { VueCropper } from "vue-cropper";
 import { uploadAvatar } from "@/api/system/user";
 import useUserStore from '@/store/modules/user'
+import { getCurrentInstance, ref, reactive } from "vue";
 
 const userStore = useUserStore()
-const { proxy } = getCurrentInstance();
+const { proxy }:any = getCurrentInstance();
 
 const open = ref(false);
 const visible = ref(false);
 const title = ref("修改头像");
 
 //图片裁剪数据
-const options = reactive({
+const options = reactive<any>({
   img: userStore.avatar, // 裁剪图片的地址
   autoCrop: true, // 是否默认生成截图框
   autoCropWidth: 200, // 默认生成截图框宽度
@@ -93,12 +94,12 @@ function rotateRight() {
   proxy.$refs.cropper.rotateRight();
 };
 /** 图片缩放 */
-function changeScale(num) {
+function changeScale(num: number) {
   num = num || 1;
   proxy.$refs.cropper.changeScale(num);
 };
 /** 上传预处理 */
-function beforeUpload(file) {
+function beforeUpload(file: Blob) {
   if (file.type.indexOf("image/") == -1) {
     proxy.$modal.msgError("文件格式错误，请上传图片类型,如：JPG，PNG后缀的文件。");
   } else {
@@ -111,10 +112,10 @@ function beforeUpload(file) {
 };
 /** 上传图片 */
 function uploadImg() {
-  proxy.$refs.cropper.getCropBlob(data => {
+  proxy.$refs.cropper.getCropBlob((data:any) => {
     let formData = new FormData();
     formData.append("avatarfile", data);
-    uploadAvatar(formData).then(response => {
+    uploadAvatar(formData).then((response:any) => {
       open.value = false;
       options.img = import.meta.env.VITE_APP_BASE_API + response.imgUrl;
       userStore.avatar = options.img;
@@ -124,7 +125,7 @@ function uploadImg() {
   });
 };
 /** 实时预览 */
-function realTime(data) {
+function realTime(data: any) {
   options.previews = data;
 };
 /** 关闭窗口 */

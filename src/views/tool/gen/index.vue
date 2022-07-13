@@ -172,13 +172,15 @@
   </div>
 </template>
 
-<script setup name="Gen">
+<script setup name="Gen" lang="ts">
 import { listTable, previewTable, delTable, genCode, synchDb } from "@/api/tool/gen";
 import router from "@/router";
-import importTable from "./importTable";
+import { getCurrentInstance, ref, reactive, toRefs, onActivated } from "vue";
+import { useRoute } from "vue-router";
+import importTable from "./importTable.vue";
 
 const route = useRoute();
-const { proxy } = getCurrentInstance();
+const { proxy }:any = getCurrentInstance();
 
 const tableList = ref([]);
 const loading = ref(true);
@@ -189,9 +191,22 @@ const multiple = ref(true);
 const total = ref(0);
 const tableNames = ref([]);
 const dateRange = ref([]);
-const uniqueId = ref("");
+const uniqueId = ref<any>("");
 
-const data = reactive({
+const data = reactive<{
+  queryParams:{
+    pageNum: number,
+    pageSize: number,
+    tableName: any,
+    tableComment: any
+  },
+  preview:{
+    open: boolean,
+    title: string,
+    data: any,
+    activeName: string
+  }
+}>({
   queryParams: {
     pageNum: 1,
     pageSize: 10,
@@ -206,7 +221,7 @@ const data = reactive({
   }
 });
 
-const { queryParams, preview } = toRefs(data);
+const { queryParams, preview }:any = toRefs(data);
 
 onActivated(() => {
   const time = route.query.t;
@@ -222,7 +237,7 @@ onActivated(() => {
 /** 查询表集合 */
 function getList() {
   loading.value = true;
-  listTable(proxy.addDateRange(queryParams.value, dateRange.value)).then(response => {
+  listTable(proxy.addDateRange(queryParams.value, dateRange.value)).then((response:any) => {
     tableList.value = response.rows;
     total.value = response.total;
     loading.value = false;
@@ -234,7 +249,7 @@ function handleQuery() {
   getList();
 }
 /** 生成代码操作 */
-function handleGenTable(row) {
+function handleGenTable(row:any) {
   const tbNames = row.tableName || tableNames.value;
   if (tbNames == "") {
     proxy.$modal.msgError("请选择要生成的数据");
@@ -249,7 +264,7 @@ function handleGenTable(row) {
   }
 }
 /** 同步数据库操作 */
-function handleSynchDb(row) {
+function handleSynchDb(row:any) {
   const tableName = row.tableName;
   proxy.$modal.confirm('确认要强制同步"' + tableName + '"表结构吗？').then(function () {
     return synchDb(tableName);
@@ -268,7 +283,7 @@ function resetQuery() {
   handleQuery();
 }
 /** 预览按钮 */
-function handlePreview(row) {
+function handlePreview(row:any) {
   previewTable(row.tableId).then(response => {
     preview.value.data = response.data;
     preview.value.open = true;
@@ -280,19 +295,19 @@ function copyTextSuccess() {
   proxy.$modal.msgSuccess("复制成功");
 }
 // 多选框选中数据
-function handleSelectionChange(selection) {
+function handleSelectionChange(selection: { map: (arg0: { (item: any): any; (item: any): any; }) => never[]; length: number; }) {
   ids.value = selection.map(item => item.tableId);
   tableNames.value = selection.map(item => item.tableName);
   single.value = selection.length != 1;
   multiple.value = !selection.length;
 }
 /** 修改按钮操作 */
-function handleEditTable(row) {
+function handleEditTable(row:any) {
   const tableId = row.tableId || ids.value[0];
   router.push({ path: "/tool/gen-edit/index/" + tableId, query: { pageNum: queryParams.value.pageNum } });
 }
 /** 删除按钮操作 */
-function handleDelete(row) {
+function handleDelete(row:any) {
   const tableIds = row.tableId || ids.value;
   proxy.$modal.confirm('是否确认删除表编号为"' + tableIds + '"的数据项？').then(function () {
     return delTable(tableIds);

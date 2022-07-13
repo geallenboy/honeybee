@@ -10,8 +10,10 @@
   </section>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import useTagsViewStore from '@/store/modules/tagsView'
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 
 const tagsViewStore = useTagsViewStore()
 const route = useRoute()

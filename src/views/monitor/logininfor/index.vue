@@ -113,10 +113,11 @@
    </div>
 </template>
 
-<script setup name="Logininfor">
+<script setup name="Logininfor" lang="ts">
 import { list, delLogininfor, cleanLogininfor } from "@/api/monitor/logininfor";
+import { getCurrentInstance, ref } from "vue";
 
-const { proxy } = getCurrentInstance();
+const { proxy }:any = getCurrentInstance();
 const { sys_common_status } = proxy.useDict("sys_common_status");
 
 const logininforList = ref([]);
@@ -142,7 +143,7 @@ const queryParams = ref({
 /** 查询登录日志列表 */
 function getList() {
   loading.value = true;
-  list(proxy.addDateRange(queryParams.value, dateRange.value)).then(response => {
+  list(proxy.addDateRange(queryParams.value, dateRange.value)).then((response:any) => {
     logininforList.value = response.rows;
     total.value = response.total;
     loading.value = false;
@@ -161,19 +162,19 @@ function resetQuery() {
   handleQuery();
 }
 /** 多选框选中数据 */
-function handleSelectionChange(selection) {
+function handleSelectionChange(selection: { map: (arg0: (item: any) => any) => never[]; length: any; }) {
   ids.value = selection.map(item => item.infoId);
   multiple.value = !selection.length;
 }
 /** 排序触发事件 */
-function handleSortChange(column, prop, order) {
+function handleSortChange(column: { prop: undefined; order: undefined; }, prop: any, order: any) {
   queryParams.value.orderByColumn = column.prop;
   queryParams.value.isAsc = column.order;
   getList();
 }
 /** 删除按钮操作 */
-function handleDelete(row) {
-  const infoIds = row.infoId || ids.value;
+function handleDelete(row: { infoId: never[]; }) {
+  const infoIds:any = row.infoId || ids.value;
   proxy.$modal.confirm('是否确认删除访问编号为"' + infoIds + '"的数据项?').then(function () {
     return delLogininfor(infoIds);
   }).then(() => {

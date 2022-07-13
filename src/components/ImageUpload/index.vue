@@ -45,8 +45,9 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { getToken } from "@/utils/auth";
+import { computed, getCurrentInstance, ref, watch } from "vue";
 
 const props = defineProps({
   modelValue: [String, Object, Array],
@@ -72,10 +73,10 @@ const props = defineProps({
   },
 });
 
-const { proxy } = getCurrentInstance();
+const { proxy }:any = getCurrentInstance();
 const emit = defineEmits();
 const number = ref(0);
-const uploadList = ref([]);
+const uploadList = ref<any[]>([]);
 const dialogImageUrl = ref("");
 const dialogVisible = ref(false);
 const baseUrl = import.meta.env.VITE_APP_BASE_API;
@@ -91,7 +92,7 @@ watch(() => props.modelValue, val => {
     // 首先将值转为数组
     const list = Array.isArray(val) ? val : props.modelValue.split(",");
     // 然后将数组转为对象数组
-    fileList.value = list.map(item => {
+    fileList.value = list.map((item: any) => {
       if (typeof item === "string") {
         if (item.indexOf(baseUrl) === -1) {
           item = { name: baseUrl + item, url: baseUrl + item };
@@ -108,15 +109,15 @@ watch(() => props.modelValue, val => {
 },{ deep: true, immediate: true });
 
 // 删除图片
-function handleRemove(file, files) {
+function handleRemove(file: any, files: any) {
   emit("update:modelValue", listToString(fileList.value));
 }
 
 // 上传成功回调
-function handleUploadSuccess(res) {
+function handleUploadSuccess(res: { fileName: any; }) {
   uploadList.value.push({ name: res.fileName, url: res.fileName });
   if (uploadList.value.length === number.value) {
-    fileList.value = fileList.value.filter(f => f.url !== undefined).concat(uploadList.value);
+    fileList.value = fileList.value.filter((f:any) => f.url !== undefined).concat(uploadList.value as never[]);
     uploadList.value = [];
     number.value = 0;
     emit("update:modelValue", listToString(fileList.value));
@@ -125,14 +126,14 @@ function handleUploadSuccess(res) {
 }
 
 // 上传前loading加载
-function handleBeforeUpload(file) {
+function handleBeforeUpload(file: { name: string; type: string|string[]; size: number; }) {
   let isImg = false;
   if (props.fileType.length) {
     let fileExtension = "";
     if (file.name.lastIndexOf(".") > -1) {
       fileExtension = file.name.slice(file.name.lastIndexOf(".") + 1);
     }
-    isImg = props.fileType.some(type => {
+    isImg = props.fileType.some((type:any) => {
       if (file.type.indexOf(type) > -1) return true;
       if (fileExtension && fileExtension.indexOf(type) > -1) return true;
       return false;
@@ -169,13 +170,13 @@ function handleUploadError() {
 }
 
 // 预览
-function handlePictureCardPreview(file) {
+function handlePictureCardPreview(file: { url: string; }) {
   dialogImageUrl.value = file.url;
   dialogVisible.value = true;
 }
 
 // 对象转成指定字符串分隔
-function listToString(list, separator) {
+function listToString(list: any[], separator?: string|undefined) {
   let strs = "";
   separator = separator || ",";
   for (let i in list) {

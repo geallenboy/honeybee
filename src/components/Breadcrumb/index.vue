@@ -1,3 +1,5 @@
+
+
 <template>
   <el-breadcrumb class="app-breadcrumb" separator="/">
     <transition-group name="breadcrumb">
@@ -9,30 +11,32 @@
   </el-breadcrumb>
 </template>
 
-<script setup>
+<script setup lang='ts'>
+import { ref, watchEffect } from "vue";
+import { useRoute, useRouter } from "vue-router";
 const route = useRoute();
 const router = useRouter();
-const levelList = ref([])
+const levelList = ref<any[]>([])
 
 function getBreadcrumb() {
   // only show routes with meta.title
-  let matched = route.matched.filter(item => item.meta && item.meta.title);
+  let matched:any = route.matched.filter(item => item.meta && item.meta.title);
   const first = matched[0]
   // 判断是否为首页
   if (!isDashboard(first)) {
     matched = [{ path: '/index', meta: { title: '首页' } }].concat(matched)
   }
 
-  levelList.value = matched.filter(item => item.meta && item.meta.title && item.meta.breadcrumb !== false)
+  levelList.value = matched.filter((item:any) => item.meta && item.meta.title && item.meta.breadcrumb !== false)
 }
-function isDashboard(route) {
+function isDashboard(route: { name: string; }) {
   const name = route && route.name
   if (!name) {
     return false
   }
   return name.trim() === 'Index'
 }
-function handleLink(item) {
+function handleLink(item: { redirect: any; path: any; }) {
   const { redirect, path } = item
   if (redirect) {
     router.push(redirect)

@@ -4,7 +4,7 @@
   </svg>
 </template>
 
-<script>
+<script >
 export default defineComponent({
   props: {
     iconClass: {

@@ -1,7 +1,3 @@
-
-
-
-
 <template>
   <div class="app-container home">
 
@@ -44,7 +40,7 @@
           <el-col :span="6">
             <h4>后端技术</h4>
             <ul>
-              <li>SpringBoot</li>
+ <li>SpringBoot</li>
               <li>Spring Security</li>
               <li>JWT</li>
               <li>MyBatis</li>

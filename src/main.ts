@@ -2,19 +2,16 @@
 import { createApp } from 'vue'
 import Cookies from 'js-cookie'
 import ElementPlus from 'element-plus'
+import 'element-plus/dist/index.css';
 import locale from 'element-plus/lib/locale/lang/zh-cn' // 中文语言
 import '@/assets/styles/index.scss' // global css
-
 import App from '@/App.vue'
 import store from '@/store'
 import router from '@/router'
 import directive from '@/directive' // directive
-
-
 // 注册指令
 import plugins from './plugins' // plugins
 import { download } from '@/utils/request'
-
 // svg图标
 import 'virtual:svg-icons-register'
 import SvgIcon from '@/components/SvgIcon/index.vue'

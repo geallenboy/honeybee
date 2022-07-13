@@ -17,18 +17,20 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import Fuse from 'fuse.js'
 import { getNormalPath } from '@/utils/main'
 import { isHttp } from '@/utils/validate'
 import usePermissionStore from '@/store/modules/permission'
+import { computed, nextTick, onMounted, ref, watch, watchEffect } from 'vue';
+import { useRouter } from 'vue-router';
 
 const search = ref('');
 const options = ref([]);
-const searchPool = ref([]);
+const searchPool = ref<any[]>([]);
 const show = ref(false);
-const fuse = ref(undefined);
-const headerSearchSelectRef = ref(null);
+const fuse = ref<any>(undefined);
+const headerSearchSelectRef = ref<any>(null);
 const router = useRouter();
 const routes = computed(() => usePermissionStore().routes);
 
@@ -43,7 +45,7 @@ function close() {
   options.value = []
   show.value = false
 }
-function change(val) {
+function change(val: { path: any; }) {
   const path = val.path;
   if (isHttp(path)) {
     // http(s):// 路径新窗口打开
@@ -59,13 +61,13 @@ function change(val) {
     show.value = false
   })
 }
-function initFuse(list) {
+function initFuse(list: readonly any[]) {
   fuse.value = new Fuse(list, {
     shouldSort: true,
     threshold: 0.4,
     location: 0,
     distance: 100,
-    maxPatternLength: 32,
+    // maxPatternLength: 32,
     minMatchCharLength: 1,
     keys: [{
       name: 'title',
@@ -78,14 +80,14 @@ function initFuse(list) {
 }
 // Filter out the routes that can be displayed in the sidebar
 // And generate the internationalized title
-function generateRoutes(routes, basePath = '', prefixTitle = []) {
-  let res = []
+function generateRoutes(routes: any, basePath = '', prefixTitle = []) {
+  let res:any[] = []
 
   for (const r of routes) {
     // skip hidden router
     if (r.hidden) { continue }
     const p = r.path.length > 0 && r.path[0] === '/' ? r.path : '/' + r.path;
-    const data = {
+    const data:any = {
       path: !isHttp(r.path) ? getNormalPath(basePath + p) : r.path,
       title: [...prefixTitle]
     }
@@ -110,7 +112,7 @@ function generateRoutes(routes, basePath = '', prefixTitle = []) {
   }
   return res
 }
-function querySearch(query) {
+function querySearch(query: string) {
   if (query !== '') {
     options.value = fuse.value.search(query)
   } else {

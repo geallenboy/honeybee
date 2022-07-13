@@ -181,10 +181,11 @@
    </div>
 </template>
 
-<script setup name="Dict">
+<script setup name="Dict" lang="ts">
 import { listType, getType, delType, addType, updateType, refreshCache } from "@/api/system/dict/type";
+import { getCurrentInstance, reactive, ref, toRefs } from "vue";
 
-const { proxy } = getCurrentInstance();
+const { proxy }:any = getCurrentInstance();
 const { sys_normal_disable } = proxy.useDict("sys_normal_disable");
 
 const typeList = ref([]);
@@ -213,12 +214,12 @@ const data = reactive({
   },
 });
 
-const { queryParams, form, rules } = toRefs(data);
+const { queryParams, form, rules }:any = toRefs(data);
 
 /** 查询字典类型列表 */
 function getList() {
   loading.value = true;
-  listType(proxy.addDateRange(queryParams.value, dateRange.value)).then(response => {
+  listType(proxy.addDateRange(queryParams.value, dateRange.value)).then((response:any) => {
     typeList.value = response.rows;
     total.value = response.total;
     loading.value = false;
@@ -258,15 +259,15 @@ function handleAdd() {
   title.value = "添加字典类型";
 }
 /** 多选框选中数据 */
-function handleSelectionChange(selection) {
-  ids.value = selection.map(item => item.dictId);
+function handleSelectionChange(selection: { map: (arg0: (item: any) => any) => never[]; length: number; }) {
+  ids.value = selection.map((item: { dictId: any; }) => item.dictId);
   single.value = selection.length != 1;
   multiple.value = !selection.length;
 }
 /** 修改按钮操作 */
-function handleUpdate(row) {
+function handleUpdate(row: { dictId: never[]; }) {
   reset();
-  const dictId = row.dictId || ids.value;
+  const dictId:any = row.dictId || ids.value;
   getType(dictId).then(response => {
     form.value = response.data;
     open.value = true;
@@ -275,7 +276,7 @@ function handleUpdate(row) {
 }
 /** 提交按钮 */
 function submitForm() {
-  proxy.$refs["dictRef"].validate(valid => {
+  proxy.$refs["dictRef"].validate((valid: any) => {
     if (valid) {
       if (form.value.dictId != undefined) {
         updateType(form.value).then(response => {
@@ -294,8 +295,8 @@ function submitForm() {
   });
 }
 /** 删除按钮操作 */
-function handleDelete(row) {
-  const dictIds = row.dictId || ids.value;
+function handleDelete(row: { dictId: never[]; }) {
+  const dictIds:any = row.dictId || ids.value;
   proxy.$modal.confirm('是否确认删除字典编号为"' + dictIds + '"的数据项？').then(function() {
     return delType(dictIds);
   }).then(() => {
