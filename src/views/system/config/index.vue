@@ -2,7 +2,7 @@
 <script setup name="Config" lang="ts">
 import { listConfig, getConfig, delConfig, addConfig, updateConfig, refreshCache } from "@/api/system/config";
 import { getCurrentInstance, ref, reactive, toRefs } from "vue";
-
+import {parseTime, resetForm} from '@/utils/main'
 const { proxy }:any = getCurrentInstance();
 const { sys_yes_no } = proxy.useDict("sys_yes_no");
 
@@ -59,7 +59,7 @@ function reset() {
     configType: "Y",
     remark: undefined
   };
-  proxy.resetForm("configRef");
+  resetForm(proxy,"configRef");
 }
 /** 搜索按钮操作 */
 function handleQuery() {
@@ -69,7 +69,7 @@ function handleQuery() {
 /** 重置按钮操作 */
 function resetQuery() {
   dateRange.value = [];
-  proxy.resetForm("queryRef");
+  resetForm(proxy,"queryRef");
   handleQuery();
 }
 /** 多选框选中数据 */

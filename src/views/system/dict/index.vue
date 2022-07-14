@@ -2,7 +2,7 @@
 <script setup name="Dict" lang="ts">
 import { listType, getType, delType, addType, updateType, refreshCache } from "@/api/system/dict/type";
 import { getCurrentInstance, reactive, ref, toRefs } from "vue";
-
+import {parseTime, resetForm} from '@/utils/main'
 const { proxy }:any = getCurrentInstance();
 const { sys_normal_disable } = proxy.useDict("sys_normal_disable");
 
@@ -57,7 +57,7 @@ function reset() {
     status: "0",
     remark: undefined
   };
-  proxy.resetForm("dictRef");
+  resetForm(proxy,"dictRef");
 }
 /** 搜索按钮操作 */
 function handleQuery() {
@@ -67,7 +67,7 @@ function handleQuery() {
 /** 重置按钮操作 */
 function resetQuery() {
   dateRange.value = [];
-  proxy.resetForm("queryRef");
+  resetForm(proxy,"queryRef");
   handleQuery();
 }
 /** 新增按钮操作 */

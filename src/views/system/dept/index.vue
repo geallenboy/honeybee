@@ -2,7 +2,7 @@
 <script setup name="Dept" lang="ts">
 import { listDept, getDept, delDept, addDept, updateDept, listDeptExcludeChild } from "@/api/system/dept";
 import { getCurrentInstance, ref, reactive, toRefs, nextTick } from "vue";
-
+import {parseTime, resetForm} from '@/utils/main'
 const { proxy }:any = getCurrentInstance();
 const { sys_normal_disable } = proxy.useDict("sys_normal_disable");
 
@@ -57,7 +57,7 @@ function reset() {
     email: undefined,
     status: "0"
   };
-  proxy.resetForm("deptRef");
+  resetForm(proxy,"deptRef");
 }
 /** 搜索按钮操作 */
 function handleQuery() {
@@ -65,7 +65,7 @@ function handleQuery() {
 }
 /** 重置按钮操作 */
 function resetQuery() {
-  proxy.resetForm("queryRef");
+  resetForm(proxy,"queryRef");
   handleQuery();
 }
 /** 新增按钮操作 */

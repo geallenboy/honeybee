@@ -5,7 +5,7 @@ import SvgIcon from "@/components/SvgIcon/index.vue";
 import IconSelect from "@/components/SvgIcon/svgicon";
 import { ClickOutside as vClickOutside } from 'element-plus'
 import { getCurrentInstance, ref, reactive, toRefs, nextTick } from "vue";
-
+import {parseTime, resetForm} from '@/utils/main'
 const { proxy }:any = getCurrentInstance();
 const { sys_show_hide, sys_normal_disable } = proxy.useDict("sys_show_hide", "sys_normal_disable");
 
@@ -71,7 +71,7 @@ function reset() {
     visible: "0",
     status: "0"
   };
-  proxy.resetForm("menuRef");
+  resetForm(proxy,"menuRef");
 }
 /** 展示下拉图标 */
 function showSelectIcon() {
@@ -93,7 +93,7 @@ function handleQuery() {
 }
 /** 重置按钮操作 */
 function resetQuery() {
-  proxy.resetForm("queryRef");
+  resetForm(proxy,"queryRef");
   handleQuery();
 }
 /** 新增按钮操作 */

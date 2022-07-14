@@ -4,7 +4,7 @@
 import { getToken } from "@/utils/auth";
 import { treeselect } from "@/api/system/dept";
 import { changeUserStatus, listUser, resetUserPwd, delUser, getUser, updateUser, addUser } from "@/api/system/user";
-
+import {parseTime, resetForm} from '@/utils/main'
 import { watch,getCurrentInstance, ref, reactive, toRefs } from "vue";
 import { useRouter } from "vue-router";
 
@@ -111,7 +111,7 @@ function handleQuery() {
 /** 重置按钮操作 */
 function resetQuery() {
   dateRange.value = [];
-  proxy.resetForm("queryRef");
+  resetForm(proxy,"queryRef");
   handleQuery();
 };
 /** 删除按钮操作 */
@@ -230,7 +230,7 @@ function reset() {
     postIds: [],
     roleIds: []
   };
-  proxy.resetForm("userRef");
+  resetForm(proxy,"userRef");
 };
 /** 取消按钮 */
 function cancel() {

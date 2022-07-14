@@ -2,33 +2,23 @@
 <script setup lang="ts">
 import { getToken } from "@/utils/auth";
 import { computed, getCurrentInstance, ref, watch } from "vue";
+interface Props {
+  modelValue:any,
+  limit:number,
+  fileSize:number,
+  fileType:any,
+  isShowTip:boolean
+}
 
-const props = defineProps({
-  modelValue: [String, Object, Array],
-  // 图片数量限制
-  limit: {
-    type: Number,
-    default: 5,
-  },
-  // 大小限制(MB)
-  fileSize: {
-    type: Number,
-    default: 5,
-  },
-  // 文件类型, 例如['png', 'jpg', 'jpeg']
-  fileType: {
-    type: Array,
-    default: () => ["png", "jpg", "jpeg"],
-  },
-  // 是否显示提示
-  isShowTip: {
-    type: Boolean,
-    default: true
-  },
-});
+const props = withDefaults(defineProps<Props>(),{
+  limit:5,
+  fileSize:3,
+  fileType:["png", "jpg", "jpeg"],
+  isShowTip:true
+})
 
 const { proxy }:any = getCurrentInstance();
-const emit = defineEmits();
+const emit = defineEmits(['update:modelValue']);
 const number = ref(0);
 const uploadList = ref<any[]>([]);
 const dialogImageUrl = ref("");

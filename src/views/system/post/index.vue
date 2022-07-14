@@ -2,7 +2,7 @@
 <script setup name="Post" lang="ts">
 import { listPost, addPost, delPost, getPost, updatePost } from "@/api/system/post";
 import { getCurrentInstance, reactive, ref, toRefs } from "vue";
-
+import {parseTime, resetForm} from '@/utils/main'
 const { proxy }:any = getCurrentInstance();
 const { sys_normal_disable } = proxy.useDict("sys_normal_disable");
 
@@ -58,7 +58,7 @@ function reset() {
     status: "0",
     remark: undefined
   };
-  proxy.resetForm("postRef");
+  resetForm(proxy,"postRef");
 }
 /** 搜索按钮操作 */
 function handleQuery() {
@@ -67,7 +67,7 @@ function handleQuery() {
 }
 /** 重置按钮操作 */
 function resetQuery() {
-  proxy.resetForm("queryRef");
+  resetForm(proxy,"queryRef");
   handleQuery();
 }
 /** 多选框选中数据 */

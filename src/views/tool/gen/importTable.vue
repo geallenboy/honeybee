@@ -2,6 +2,7 @@
 
 <script setup lang="ts">
 import { listDbTable, importTable } from "@/api/tool/gen";
+import { resetForm } from "@/utils/main";
 import { ref, getCurrentInstance, reactive } from "vue";
 
 const total = ref(0);
@@ -46,7 +47,7 @@ function handleQuery() {
 }
 /** 重置按钮操作 */
 function resetQuery() {
-  proxy.resetForm("queryRef");
+  resetForm(proxy,"queryRef");
   handleQuery();
 }
 /** 导入按钮操作 */

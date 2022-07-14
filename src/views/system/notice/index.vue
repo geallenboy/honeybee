@@ -2,7 +2,7 @@
 <script setup name="Notice" lang="ts">
 import { listNotice, getNotice, delNotice, addNotice, updateNotice } from "@/api/system/notice";
 import { getCurrentInstance, ref, reactive, toRefs } from "vue";
-
+import {parseTime, resetForm} from '@/utils/main'
 const { proxy }:any = getCurrentInstance();
 const { sys_notice_status, sys_notice_type } = proxy.useDict("sys_notice_status", "sys_notice_type");
 
@@ -56,7 +56,7 @@ function reset() {
     noticeContent: undefined,
     status: "0"
   };
-  proxy.resetForm("noticeRef");
+  resetForm(proxy,"noticeRef");
 }
 /** 搜索按钮操作 */
 function handleQuery() {
@@ -65,7 +65,7 @@ function handleQuery() {
 }
 /** 重置按钮操作 */
 function resetQuery() {
-  proxy.resetForm("queryRef");
+  resetForm(proxy,"queryRef");
   handleQuery();
 }
 /** 多选框选中数据 */

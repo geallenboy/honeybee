@@ -5,7 +5,7 @@ import { roleMenuTreeselect, treeselect as menuTreeselect } from "@/api/system/m
 import { treeselect as deptTreeselect, roleDeptTreeselect } from "@/api/system/dept";
 import { getCurrentInstance, ref, reactive, toRefs, nextTick } from "vue";
 import { useRouter } from "vue-router";
-
+import {parseTime, resetForm} from '@/utils/main'
 const router = useRouter();
 const { proxy }:any = getCurrentInstance();
 const { sys_normal_disable } = proxy.useDict("sys_normal_disable");
@@ -74,7 +74,7 @@ function handleQuery() {
 /** 重置按钮操作 */
 function resetQuery() {
   dateRange.value = [];
-  proxy.resetForm("queryRef");
+  resetForm(proxy,"queryRef");
   handleQuery();
 }
 /** 删除按钮操作 */
@@ -163,7 +163,7 @@ function reset() {
     deptCheckStrictly: true,
     remark: undefined
   };
-  proxy.resetForm("roleRef");
+  resetForm(proxy,"roleRef");
 }
 /** 添加角色 */
 function handleAdd() {

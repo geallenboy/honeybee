@@ -3,7 +3,7 @@
 <script setup name="Logininfor" lang="ts">
 import { list, delLogininfor, cleanLogininfor } from "@/api/monitor/logininfor";
 import { getCurrentInstance, ref } from "vue";
-
+import {parseTime, resetForm} from '@/utils/main'
 const { proxy }:any = getCurrentInstance();
 const { sys_common_status } = proxy.useDict("sys_common_status");
 
@@ -44,7 +44,7 @@ function handleQuery() {
 /** 重置按钮操作 */
 function resetQuery() {
   dateRange.value = [];
-  proxy.resetForm("queryRef");
+  resetForm(proxy,"queryRef");
   proxy.$refs["logininforRef"].sort(defaultSort.value.prop, defaultSort.value.order);
   handleQuery();
 }

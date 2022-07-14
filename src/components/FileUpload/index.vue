@@ -3,29 +3,22 @@
 import { getToken } from "@/utils/auth";
 import { computed, getCurrentInstance, ref, watch } from "vue";
 
-const props:any = defineProps({
-  modelValue: [String, Object, Array],
-  // 数量限制
-  limit: {
-    type: Number,
-    default: 5,
-  },
-  // 大小限制(MB)
-  fileSize: {
-    type: Number,
-    default: 5,
-  },
-  // 文件类型, 例如['png', 'jpg', 'jpeg']
-  fileType: {
-    type: Array,
-    default: () => ["doc", "xls", "ppt", "txt", "pdf"],
-  },
-  // 是否显示提示
-  isShowTip: {
-    type: Boolean,
-    default: true
-  }
-});
+interface Props{
+  modelValue:any,
+  limit:number,
+  fileSize:number,
+  fileType:any,
+  isShowTip:boolean
+
+}
+
+
+const props = withDefaults(defineProps<Props>(),{
+  limit:5,
+  default:3,
+  fileType:["doc", "xls", "ppt", "txt", "pdf"],
+  isShowTip:true
+})
 
 const { proxy }:any = getCurrentInstance();
 const number = ref(0);
@@ -97,7 +90,7 @@ function handleExceed() {
 function handleUploadError(err?: any) {
   proxy.$modal.msgError("上传文件失败");
 }
-
+const emits = defineEmits(['update:modelValue'])
 // 上传成功回调
 function handleUploadSuccess(res: { fileName: any; }, file: any) {
   uploadList.value.push({ name: res.fileName, url: res.fileName });
@@ -105,7 +98,7 @@ function handleUploadSuccess(res: { fileName: any; }, file: any) {
     fileList.value = fileList.value.filter((f:any) => f.url !== undefined).concat(uploadList.value as never[]);
     uploadList.value = [];
     number.value = 0;
-    defineEmits("update:modelValue", listToString(fileList.value));
+    emits("update:modelValue", listToString(fileList.value));
     proxy.$modal.closeLoading();
   }
 }
@@ -113,7 +106,7 @@ function handleUploadSuccess(res: { fileName: any; }, file: any) {
 // 删除文件
 function handleDelete(index: number) {
   fileList.value.splice(index, 1);
-  defineEmits("update:modelValue", listToString(fileList.value));
+  emits("update:modelValue", listToString(fileList.value));
 }
 
 // 获取文件名称

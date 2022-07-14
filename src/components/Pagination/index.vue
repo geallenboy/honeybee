@@ -1,6 +1,7 @@
 
 <script setup lang="ts">
 import { scrollTo } from '@/utils/scroll-to'
+import { AnyMxRecord } from 'dns';
 import { computed } from 'vue';
 
 const props = defineProps({
@@ -45,7 +46,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits();
+const emit = defineEmits(['update:page','update:limit','pagination']);
 const currentPage = computed({
   get() {
     return props.page

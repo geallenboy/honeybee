@@ -4,7 +4,7 @@ import selectUser from "./selectUser.vue";
 import { allocatedUserList, authUserCancel, authUserCancelAll } from "@/api/system/role";
 import { getCurrentInstance, ref, reactive } from "vue";
 import { useRoute } from "vue-router";
-
+import {parseTime, resetForm} from '@/utils/main'
 const route = useRoute();
 const { proxy }:any = getCurrentInstance();
 const { sys_normal_disable } = proxy.useDict("sys_normal_disable");
@@ -45,7 +45,7 @@ function handleQuery() {
 }
 /** 重置按钮操作 */
 function resetQuery() {
-  proxy.resetForm("queryRef");
+  resetForm(proxy,"queryRef");
   handleQuery();
 }
 // 多选框选中数据

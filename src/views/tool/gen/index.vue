@@ -2,6 +2,7 @@
 <script setup name="Gen" lang="ts">
 import { listTable, previewTable, delTable, genCode, synchDb } from "@/api/tool/gen";
 import router from "@/router";
+import { resetForm } from "@/utils/main";
 import { getCurrentInstance, ref, reactive, toRefs, onActivated } from "vue";
 import { useRoute } from "vue-router";
 import importTable from "./importTable.vue";
@@ -56,7 +57,7 @@ onActivated(() => {
     uniqueId.value = time;
     queryParams.value.pageNum = Number(route.query.pageNum);
     dateRange.value = [];
-    proxy.resetForm("queryForm");
+    resetForm(proxy,"queryForm");
     getList();
   }
 })
@@ -106,7 +107,7 @@ function openImportTable() {
 /** 重置按钮操作 */
 function resetQuery() {
   dateRange.value = [];
-  proxy.resetForm("queryRef");
+  resetForm(proxy,"queryRef");
   handleQuery();
 }
 /** 预览按钮 */

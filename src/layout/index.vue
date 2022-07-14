@@ -28,18 +28,18 @@ const WIDTH = 992; // refer to Bootstrap's responsive design
 
 watchEffect(() => {
   if (device.value === 'mobile' && sidebar.value.opened) {
-    useAppStore().closeSideBar(false)
+    useAppStore().closeSideBar({ withoutAnimation: false })
   }
   if (width.value - 1 < WIDTH) {
     useAppStore().toggleDevice('mobile')
-    useAppStore().closeSideBar(true)
+    useAppStore().closeSideBar({ withoutAnimation: true })
   } else {
     useAppStore().toggleDevice('desktop')
   }
 })
 
 function handleClickOutside() {
-  useAppStore().closeSideBar(false)
+  useAppStore().closeSideBar({ withoutAnimation: false })
 }
 
 const settingRef = ref<any>(null);
@@ -48,7 +48,7 @@ function setLayout() {
 }
 </script>
 <template>
-  <div :class="classObj" class="app-wrapper" ><!--:style="{ '--current-color': theme }"-->
+  <div :class="classObj" class="app-wrapper" :style="{ '--current-color': theme }">
     <div v-if="device === 'mobile' && sidebar.opened" class="drawer-bg" @click="handleClickOutside"/>
     <sidebar v-if="!sidebar.hide" class="sidebar-container" />
     <div :class="{ hasTagsView: needTagsView, sidebarHide: sidebar.hide }" class="main-container">
@@ -70,6 +70,7 @@ function setLayout() {
 .app-wrapper {
   @include clearfix;
   position: relative;
+  --current-color: #{theme};
   height: 100%;
   width: 100%;
 

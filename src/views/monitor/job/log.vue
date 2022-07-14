@@ -4,6 +4,7 @@ import { getJob } from "@/api/monitor/job";
 import { listJobLog, delJobLog, cleanJobLog } from "@/api/monitor/jobLog";
 import { getCurrentInstance, reactive, ref, toRefs } from "vue";
 import { useRoute } from "vue-router";
+import {parseTime, resetForm} from '@/utils/main'
 
 const { proxy }:any = getCurrentInstance();
 const { sys_common_status, sys_job_group } = proxy.useDict("sys_common_status", "sys_job_group");
@@ -53,7 +54,7 @@ function handleQuery() {
 /** 重置按钮操作 */
 function resetQuery() {
   dateRange.value = [];
-  proxy.resetForm("queryRef");
+  resetForm(proxy,"queryRef");
   handleQuery();
 }
 // 多选框选中数据

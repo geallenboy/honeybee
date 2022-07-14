@@ -2,20 +2,16 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-const props = defineProps({
-  showSearch: {
-    type: Boolean,
-    default: true,
-  },
-  columns: {
-    type: Array,
-  },
-})
+
+const props = withDefaults(defineProps<{
+  showSearch:boolean,
+  columns?:any
+}>(),{showSearch:true})
 
 const emits = defineEmits(['update:showSearch', 'queryTable']);
 
 // 显隐数据
-const value = ref([]);
+const value = ref<any[]>([]);
 // 弹出层标题
 const title = ref("显示/隐藏");
 // 是否显示弹出层
@@ -47,7 +43,7 @@ function showColumn() {
 // 显隐列初始默认隐藏列
 for (let item in props.columns) {
   if (props.columns[item].visible === false) {
-    value.value.push(parseInt(item));
+    value.value.push(item);
   }
 }
 </script>

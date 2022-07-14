@@ -3,7 +3,7 @@
 <script setup name="Operlog" lang="ts">
 import { list, delOperlog, cleanOperlog } from "@/api/monitor/operlog";
 import { getCurrentInstance, ref, reactive, toRefs } from "vue";
-
+import {parseTime, resetForm} from '@/utils/main'
 const { proxy }:any = getCurrentInstance();
 const { sys_oper_type, sys_common_status } = proxy.useDict("sys_oper_type","sys_common_status");
 
@@ -54,7 +54,7 @@ function handleQuery() {
 /** 重置按钮操作 */
 function resetQuery() {
   dateRange.value = [];
-  proxy.resetForm("queryRef");
+  resetForm(proxy,"queryRef");
   proxy.$refs["operlogRef"].sort(defaultSort.value.prop, defaultSort.value.order);
   handleQuery();
 }

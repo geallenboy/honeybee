@@ -2,6 +2,7 @@
 <script setup name="Job" lang="ts">
 import { listJob, getJob, delJob, addJob, updateJob, runJob, changeJobStatus } from "@/api/monitor/job";
 import { getCurrentInstance, reactive, ref, toRefs } from "vue";
+import {parseTime, resetForm} from '@/utils/main'
 import { useRouter } from "vue-router";
 
 const router = useRouter();
@@ -69,7 +70,7 @@ function reset() {
     concurrent: 1,
     status: "0"
   };
-  proxy.resetForm("jobRef");
+  resetForm(proxy,"jobRef");
 }
 /** 搜索按钮操作 */
 function handleQuery() {
@@ -78,7 +79,7 @@ function handleQuery() {
 }
 /** 重置按钮操作 */
 function resetQuery() {
-  proxy.resetForm("queryRef");
+  resetForm(proxy,"queryRef");
   handleQuery();
 }
 // 多选框选中数据

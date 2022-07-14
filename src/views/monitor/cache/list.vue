@@ -7,7 +7,7 @@ const { proxy }:any = getCurrentInstance();
 
 const cacheNames = ref([]);
 const cacheKeys = ref([]);
-const cacheForm = ref({});
+const cacheForm = ref<any>({});
 const loading = ref(true);
 const subLoading = ref(false);
 const nowCacheName = ref("");

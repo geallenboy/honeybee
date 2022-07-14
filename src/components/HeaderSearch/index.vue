@@ -8,7 +8,7 @@ import { computed, nextTick, onMounted, ref, watch, watchEffect } from 'vue';
 import { useRouter } from 'vue-router';
 
 const search = ref('');
-const options = ref([]);
+const options = ref<any>([]);
 const searchPool = ref<any[]>([]);
 const show = ref(false);
 const fuse = ref<any>(undefined);

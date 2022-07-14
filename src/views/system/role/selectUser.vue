@@ -2,7 +2,7 @@
 <script setup name="SelectUser" lang="ts">
 import { authUserSelectAll, unallocatedUserList } from "@/api/system/role";
 import { getCurrentInstance, ref, reactive } from "vue";
-
+import {parseTime, resetForm} from '@/utils/main'
 const props = defineProps<{roleId:any}>();
 
 const { proxy }:any = getCurrentInstance();
@@ -49,7 +49,7 @@ function handleQuery() {
 }
 /** 重置按钮操作 */
 function resetQuery() {
-  proxy.resetForm("queryRef");
+  resetForm(proxy,"queryRef");
   handleQuery();
 }
 const emit = defineEmits(["ok"]);

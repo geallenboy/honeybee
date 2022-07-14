@@ -5,7 +5,7 @@
  */
 
 // 日期格式化
-export function parseTime(time?: any, pattern?: string) {
+export function parseTime(time: any, pattern?: string) {
   if (arguments.length === 0 || !time) {
     return null
   }
@@ -46,9 +46,10 @@ export function parseTime(time?: any, pattern?: string) {
 }
 
 // 表单重置
-export function resetForm( refName: string | number) {
-  if (this.$refs[refName]) {
-    this.$refs[refName].resetFields();
+export function resetForm(proxy:any,refName: any) {
+
+  if (proxy.$refs[refName]) {
+    proxy.$refs[refName].resetFields();
   }
 }
 
