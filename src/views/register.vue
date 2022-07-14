@@ -1,79 +1,3 @@
-<template>
-  <div class="register">
-    <el-form ref="registerRef" :model="registerForm" :rules="registerRules" class="register-form">
-      <h3 class="title">若依后台管理系统</h3>
-      <el-form-item prop="username">
-        <el-input
-          v-model="registerForm.username"
-          type="text"
-          size="large"
-          auto-complete="off"
-          placeholder="账号"
-        >
-          <template #prefix><svg-icon icon-class="user" class="el-input__icon input-icon" /></template>
-        </el-input>
-      </el-form-item>
-      <el-form-item prop="password">
-        <el-input
-          v-model="registerForm.password"
-          type="password"
-          size="large"
-          auto-complete="off"
-          placeholder="密码"
-          @keyup.enter="handleRegister"
-        >
-          <template #prefix><svg-icon icon-class="password" class="el-input__icon input-icon" /></template>
-        </el-input>
-      </el-form-item>
-      <el-form-item prop="confirmPassword">
-        <el-input
-          v-model="registerForm.confirmPassword"
-          type="password"
-          size="large"
-          auto-complete="off"
-          placeholder="确认密码"
-          @keyup.enter="handleRegister"
-        >
-          <template #prefix><svg-icon icon-class="password" class="el-input__icon input-icon" /></template>
-        </el-input>
-      </el-form-item>
-      <el-form-item prop="code" v-if="captchaOnOff">
-        <el-input
-          size="large"
-          v-model="registerForm.code"
-          auto-complete="off"
-          placeholder="验证码"
-          style="width: 63%"
-          @keyup.enter="handleRegister"
-        >
-          <template #prefix><svg-icon icon-class="validCode" class="el-input__icon input-icon" /></template>
-        </el-input>
-        <div class="register-code">
-          <img :src="codeUrl" @click="getCode" class="register-code-img"/>
-        </div>
-      </el-form-item>
-      <el-form-item style="width:100%;">
-        <el-button
-          :loading="loading"
-          size="large"
-          type="primary"
-          style="width:100%;"
-          @click.prevent="handleRegister"
-        >
-          <span v-if="!loading">注 册</span>
-          <span v-else>注 册 中...</span>
-        </el-button>
-        <div style="float: right;">
-          <router-link class="link-type" :to="'/login'">使用已有账户登录</router-link>
-        </div>
-      </el-form-item>
-    </el-form>
-    <!--  底部  -->
-    <div class="el-register-footer">
-      <span>Copyright © 2018-2022  All Rights Reserved.</span>
-    </div>
-  </div>
-</template>
 
 <script setup lang="ts">
 import { ElMessageBox } from "element-plus";
@@ -154,6 +78,83 @@ function getCode() {
 
 getCode();
 </script>
+<template>
+  <div class="register">
+    <el-form ref="registerRef" :model="registerForm" :rules="registerRules" class="register-form">
+      <h3 class="title">若依后台管理系统</h3>
+      <el-form-item prop="username">
+        <el-input
+          v-model="registerForm.username"
+          type="text"
+          size="large"
+          auto-complete="off"
+          placeholder="账号"
+        >
+          <template #prefix><svg-icon icon-class="user" class="el-input__icon input-icon" /></template>
+        </el-input>
+      </el-form-item>
+      <el-form-item prop="password">
+        <el-input
+          v-model="registerForm.password"
+          type="password"
+          size="large"
+          auto-complete="off"
+          placeholder="密码"
+          @keyup.enter="handleRegister"
+        >
+          <template #prefix><svg-icon icon-class="password" class="el-input__icon input-icon" /></template>
+        </el-input>
+      </el-form-item>
+      <el-form-item prop="confirmPassword">
+        <el-input
+          v-model="registerForm.confirmPassword"
+          type="password"
+          size="large"
+          auto-complete="off"
+          placeholder="确认密码"
+          @keyup.enter="handleRegister"
+        >
+          <template #prefix><svg-icon icon-class="password" class="el-input__icon input-icon" /></template>
+        </el-input>
+      </el-form-item>
+      <el-form-item prop="code" v-if="captchaOnOff">
+        <el-input
+          size="large"
+          v-model="registerForm.code"
+          auto-complete="off"
+          placeholder="验证码"
+          style="width: 63%"
+          @keyup.enter="handleRegister"
+        >
+          <template #prefix><svg-icon icon-class="validCode" class="el-input__icon input-icon" /></template>
+        </el-input>
+        <div class="register-code">
+          <img :src="codeUrl" @click="getCode" class="register-code-img"/>
+        </div>
+      </el-form-item>
+      <el-form-item style="width:100%;">
+        <el-button
+          :loading="loading"
+          size="large"
+          type="primary"
+          style="width:100%;"
+          @click.prevent="handleRegister"
+        >
+          <span v-if="!loading">注 册</span>
+          <span v-else>注 册 中...</span>
+        </el-button>
+        <div style="float: right;">
+          <router-link class="link-type" :to="'/login'">使用已有账户登录</router-link>
+        </div>
+      </el-form-item>
+    </el-form>
+    <!--  底部  -->
+    <div class="el-register-footer">
+      <span>Copyright © 2018-2022  All Rights Reserved.</span>
+    </div>
+  </div>
+</template>
+
 
 <style lang='scss' scoped>
 .register {

@@ -1,5 +1,11 @@
 
 
+<script setup lang="ts">
+import { computed } from "vue"
+let message = computed(() => {
+  return '找不到网页！'
+})
+</script>
 <template>
   <div class="wscn-http404-container">
     <div class="wscn-http404">
@@ -27,12 +33,6 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { computed } from "vue"
-let message = computed(() => {
-  return '找不到网页！'
-})
-</script>
 
 <style lang="scss" scoped>
 .wscn-http404-container{

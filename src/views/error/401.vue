@@ -1,3 +1,20 @@
+
+<script setup lang="ts">
+import errImage from "@/assets/401_images/401.gif";
+import { getCurrentInstance, ref } from "vue";
+
+let { proxy }:any = getCurrentInstance();
+
+const errGif = ref(errImage + "?" + +new Date());
+
+function back() {
+  if (proxy.$route.query.noGoBack) {
+    proxy.$router.push({ path: "/" });
+  } else {
+    proxy.$router.go(-1);
+  }
+}
+</script>
 <template>
   <div class="errPage-container">
     <el-button icon="arrow-left" class="pan-back-btn" @click="back">
@@ -25,22 +42,6 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import errImage from "@/assets/401_images/401.gif";
-import { getCurrentInstance, ref } from "vue";
-
-let { proxy }:any = getCurrentInstance();
-
-const errGif = ref(errImage + "?" + +new Date());
-
-function back() {
-  if (proxy.$route.query.noGoBack) {
-    proxy.$router.push({ path: "/" });
-  } else {
-    proxy.$router.go(-1);
-  }
-}
-</script>
 
 <style lang="scss" scoped>
 .errPage-container {

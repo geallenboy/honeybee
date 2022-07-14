@@ -1,3 +1,128 @@
+
+<script setup name="Notice" lang="ts">
+import { listNotice, getNotice, delNotice, addNotice, updateNotice } from "@/api/system/notice";
+import { getCurrentInstance, ref, reactive, toRefs } from "vue";
+
+const { proxy }:any = getCurrentInstance();
+const { sys_notice_status, sys_notice_type } = proxy.useDict("sys_notice_status", "sys_notice_type");
+
+const noticeList = ref([]);
+const open = ref(false);
+const loading = ref(true);
+const showSearch = ref(true);
+const ids = ref([]);
+const single = ref(true);
+const multiple = ref(true);
+const total = ref(0);
+const title = ref("");
+
+const data = reactive({
+  form: {},
+  queryParams: {
+    pageNum: 1,
+    pageSize: 10,
+    noticeTitle: undefined,
+    createBy: undefined,
+    status: undefined
+  },
+  rules: {
+    noticeTitle: [{ required: true, message: "公告标题不能为空", trigger: "blur" }],
+    noticeType: [{ required: true, message: "公告类型不能为空", trigger: "change" }]
+  },
+});
+
+const { queryParams, form, rules }:any = toRefs(data);
+
+/** 查询公告列表 */
+function getList() {
+  loading.value = true;
+  listNotice(queryParams.value).then((response:any) => {
+    noticeList.value = response.rows;
+    total.value = response.total;
+    loading.value = false;
+  });
+}
+/** 取消按钮 */
+function cancel() {
+  open.value = false;
+  reset();
+}
+/** 表单重置 */
+function reset() {
+  form.value = {
+    noticeId: undefined,
+    noticeTitle: undefined,
+    noticeType: undefined,
+    noticeContent: undefined,
+    status: "0"
+  };
+  proxy.resetForm("noticeRef");
+}
+/** 搜索按钮操作 */
+function handleQuery() {
+  queryParams.value.pageNum = 1;
+  getList();
+}
+/** 重置按钮操作 */
+function resetQuery() {
+  proxy.resetForm("queryRef");
+  handleQuery();
+}
+/** 多选框选中数据 */
+function handleSelectionChange(selection: { map: (arg0: (item: any) => any) => never[]; length: number; }) {
+  ids.value = selection.map((item: { noticeId: any; }) => item.noticeId);
+  single.value = selection.length != 1;
+  multiple.value = !selection.length;
+}
+/** 新增按钮操作 */
+function handleAdd() {
+  reset();
+  open.value = true;
+  title.value = "添加公告";
+}
+/**修改按钮操作 */
+function handleUpdate(row: { noticeId: never[]; }) {
+  reset();
+  const noticeId:any = row.noticeId || ids.value;
+  getNotice(noticeId).then(response => {
+    form.value = response.data;
+    open.value = true;
+    title.value = "修改公告";
+  });
+}
+/** 提交按钮 */
+function submitForm() {
+  proxy.$refs["noticeRef"].validate((valid: any) => {
+    if (valid) {
+      if (form.value.noticeId != undefined) {
+        updateNotice(form.value).then(response => {
+          proxy.$modal.msgSuccess("修改成功");
+          open.value = false;
+          getList();
+        });
+      } else {
+        addNotice(form.value).then(response => {
+          proxy.$modal.msgSuccess("新增成功");
+          open.value = false;
+          getList();
+        });
+      }
+    }
+  });
+}
+/** 删除按钮操作 */
+function handleDelete(row: { noticeId: never[]; }) {
+  const noticeIds:any = row.noticeId || ids.value
+  proxy.$modal.confirm('是否确认删除公告编号为"' + noticeIds + '"的数据项？').then(function() {
+    return delNotice(noticeIds);
+  }).then(() => {
+    getList();
+    proxy.$modal.msgSuccess("删除成功");
+  }).catch(() => {});
+}
+
+getList();
+</script>
 <template>
    <div class="app-container">
       <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
@@ -171,127 +296,3 @@
    </div>
 </template>
 
-<script setup name="Notice" lang="ts">
-import { listNotice, getNotice, delNotice, addNotice, updateNotice } from "@/api/system/notice";
-import { getCurrentInstance, ref, reactive, toRefs } from "vue";
-
-const { proxy }:any = getCurrentInstance();
-const { sys_notice_status, sys_notice_type } = proxy.useDict("sys_notice_status", "sys_notice_type");
-
-const noticeList = ref([]);
-const open = ref(false);
-const loading = ref(true);
-const showSearch = ref(true);
-const ids = ref([]);
-const single = ref(true);
-const multiple = ref(true);
-const total = ref(0);
-const title = ref("");
-
-const data = reactive({
-  form: {},
-  queryParams: {
-    pageNum: 1,
-    pageSize: 10,
-    noticeTitle: undefined,
-    createBy: undefined,
-    status: undefined
-  },
-  rules: {
-    noticeTitle: [{ required: true, message: "公告标题不能为空", trigger: "blur" }],
-    noticeType: [{ required: true, message: "公告类型不能为空", trigger: "change" }]
-  },
-});
-
-const { queryParams, form, rules }:any = toRefs(data);
-
-/** 查询公告列表 */
-function getList() {
-  loading.value = true;
-  listNotice(queryParams.value).then((response:any) => {
-    noticeList.value = response.rows;
-    total.value = response.total;
-    loading.value = false;
-  });
-}
-/** 取消按钮 */
-function cancel() {
-  open.value = false;
-  reset();
-}
-/** 表单重置 */
-function reset() {
-  form.value = {
-    noticeId: undefined,
-    noticeTitle: undefined,
-    noticeType: undefined,
-    noticeContent: undefined,
-    status: "0"
-  };
-  proxy.resetForm("noticeRef");
-}
-/** 搜索按钮操作 */
-function handleQuery() {
-  queryParams.value.pageNum = 1;
-  getList();
-}
-/** 重置按钮操作 */
-function resetQuery() {
-  proxy.resetForm("queryRef");
-  handleQuery();
-}
-/** 多选框选中数据 */
-function handleSelectionChange(selection: { map: (arg0: (item: any) => any) => never[]; length: number; }) {
-  ids.value = selection.map((item: { noticeId: any; }) => item.noticeId);
-  single.value = selection.length != 1;
-  multiple.value = !selection.length;
-}
-/** 新增按钮操作 */
-function handleAdd() {
-  reset();
-  open.value = true;
-  title.value = "添加公告";
-}
-/**修改按钮操作 */
-function handleUpdate(row: { noticeId: never[]; }) {
-  reset();
-  const noticeId:any = row.noticeId || ids.value;
-  getNotice(noticeId).then(response => {
-    form.value = response.data;
-    open.value = true;
-    title.value = "修改公告";
-  });
-}
-/** 提交按钮 */
-function submitForm() {
-  proxy.$refs["noticeRef"].validate((valid: any) => {
-    if (valid) {
-      if (form.value.noticeId != undefined) {
-        updateNotice(form.value).then(response => {
-          proxy.$modal.msgSuccess("修改成功");
-          open.value = false;
-          getList();
-        });
-      } else {
-        addNotice(form.value).then(response => {
-          proxy.$modal.msgSuccess("新增成功");
-          open.value = false;
-          getList();
-        });
-      }
-    }
-  });
-}
-/** 删除按钮操作 */
-function handleDelete(row: { noticeId: never[]; }) {
-  const noticeIds:any = row.noticeId || ids.value
-  proxy.$modal.confirm('是否确认删除公告编号为"' + noticeIds + '"的数据项？').then(function() {
-    return delNotice(noticeIds);
-  }).then(() => {
-    getList();
-    proxy.$modal.msgSuccess("删除成功");
-  }).catch(() => {});
-}
-
-getList();
-</script>

@@ -1,3 +1,111 @@
+
+<script setup name="JobLog" lang="ts">
+import { getJob } from "@/api/monitor/job";
+import { listJobLog, delJobLog, cleanJobLog } from "@/api/monitor/jobLog";
+import { getCurrentInstance, reactive, ref, toRefs } from "vue";
+import { useRoute } from "vue-router";
+
+const { proxy }:any = getCurrentInstance();
+const { sys_common_status, sys_job_group } = proxy.useDict("sys_common_status", "sys_job_group");
+
+const jobLogList = ref([]);
+const open = ref(false);
+const loading = ref(true);
+const showSearch = ref(true);
+const ids = ref<any>([]);
+const multiple = ref(true);
+const total = ref(0);
+const dateRange = ref([]);
+const route = useRoute();
+
+const data = reactive({
+  form: {},
+  queryParams: {
+    pageNum: 1,
+    pageSize: 10,
+    dictName: undefined,
+    dictType: undefined,
+    status: undefined
+  }
+});
+
+const { queryParams, form, rules }:any = toRefs(data);
+
+/** 查询调度日志列表 */
+function getList() {
+  loading.value = true;
+  listJobLog(proxy.addDateRange(queryParams.value, dateRange.value)).then((response:any) => {
+    jobLogList.value = response.rows;
+    total.value = response.total;
+    loading.value = false;
+  });
+}
+// 返回按钮
+function handleClose() {
+  const obj = { path: "/monitor/job" };
+  proxy.$tab.closeOpenPage(obj);
+}
+/** 搜索按钮操作 */
+function handleQuery() {
+  queryParams.value.pageNum = 1;
+  getList();
+}
+/** 重置按钮操作 */
+function resetQuery() {
+  dateRange.value = [];
+  proxy.resetForm("queryRef");
+  handleQuery();
+}
+// 多选框选中数据
+function handleSelectionChange(selection: any) {
+  ids.value = selection.map((item:any) => item.jobLogId);
+  multiple.value = !selection.length;
+}
+/** 详细按钮操作 */
+function handleView(row: any) {
+  open.value = true;
+  form.value = row;
+}
+/** 删除按钮操作 */
+function handleDelete(row: any) {
+  proxy.$modal.confirm('是否确认删除调度日志编号为"' + ids.value + '"的数据项?').then(function () {
+    return delJobLog(ids.value);
+  }).then(() => {
+    getList();
+    proxy.$modal.msgSuccess("删除成功");
+  }).catch(() => {});
+}
+/** 清空按钮操作 */
+function handleClean() {
+  proxy.$modal.confirm("是否确认清空所有调度日志数据项?").then(function () {
+    return cleanJobLog();
+  }).then(() => {
+    getList();
+    proxy.$modal.msgSuccess("清空成功");
+  }).catch(() => {});
+}
+/** 导出按钮操作 */
+function handleExport() {
+  proxy.download("monitor/jobLog/export", {
+    ...queryParams.value,
+  }, `job_log_${new Date().getTime()}.xlsx`);
+}
+
+(() => {
+  const jobId:any = route.query.jobId;
+  if (jobId !== undefined && jobId != 0) {
+    getJob(jobId).then(response => {
+      queryParams.value.jobName = response.data.jobName;
+      queryParams.value.jobGroup = response.data.jobGroup;
+      getList();
+    });
+  } else {
+    getList();
+  }
+})();
+
+getList();
+</script>
 <template>
    <div class="app-container">
       <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
@@ -175,110 +283,3 @@
    </div>
 </template>
 
-<script setup name="JobLog" lang="ts">
-import { getJob } from "@/api/monitor/job";
-import { listJobLog, delJobLog, cleanJobLog } from "@/api/monitor/jobLog";
-import { getCurrentInstance, reactive, ref, toRefs } from "vue";
-import { useRoute } from "vue-router";
-
-const { proxy }:any = getCurrentInstance();
-const { sys_common_status, sys_job_group } = proxy.useDict("sys_common_status", "sys_job_group");
-
-const jobLogList = ref([]);
-const open = ref(false);
-const loading = ref(true);
-const showSearch = ref(true);
-const ids = ref([]);
-const multiple = ref(true);
-const total = ref(0);
-const dateRange = ref([]);
-const route = useRoute();
-
-const data = reactive({
-  form: {},
-  queryParams: {
-    pageNum: 1,
-    pageSize: 10,
-    dictName: undefined,
-    dictType: undefined,
-    status: undefined
-  }
-});
-
-const { queryParams, form, rules }:any = toRefs(data);
-
-/** 查询调度日志列表 */
-function getList() {
-  loading.value = true;
-  listJobLog(proxy.addDateRange(queryParams.value, dateRange.value)).then((response:any) => {
-    jobLogList.value = response.rows;
-    total.value = response.total;
-    loading.value = false;
-  });
-}
-// 返回按钮
-function handleClose() {
-  const obj = { path: "/monitor/job" };
-  proxy.$tab.closeOpenPage(obj);
-}
-/** 搜索按钮操作 */
-function handleQuery() {
-  queryParams.value.pageNum = 1;
-  getList();
-}
-/** 重置按钮操作 */
-function resetQuery() {
-  dateRange.value = [];
-  proxy.resetForm("queryRef");
-  handleQuery();
-}
-// 多选框选中数据
-function handleSelectionChange(selection: { map: (arg0: (item: any) => any) => never[]; length: any; }) {
-  ids.value = selection.map(item => item.jobLogId);
-  multiple.value = !selection.length;
-}
-/** 详细按钮操作 */
-function handleView(row: any) {
-  open.value = true;
-  form.value = row;
-}
-/** 删除按钮操作 */
-function handleDelete(row: any) {
-  proxy.$modal.confirm('是否确认删除调度日志编号为"' + ids.value + '"的数据项?').then(function () {
-    return delJobLog(ids.value);
-  }).then(() => {
-    getList();
-    proxy.$modal.msgSuccess("删除成功");
-  }).catch(() => {});
-}
-/** 清空按钮操作 */
-function handleClean() {
-  proxy.$modal.confirm("是否确认清空所有调度日志数据项?").then(function () {
-    return cleanJobLog();
-  }).then(() => {
-    getList();
-    proxy.$modal.msgSuccess("清空成功");
-  }).catch(() => {});
-}
-/** 导出按钮操作 */
-function handleExport() {
-  proxy.download("monitor/jobLog/export", {
-    ...queryParams.value,
-  }, `job_log_${new Date().getTime()}.xlsx`);
-}
-
-(() => {
-  const jobId:any = route.query.jobId;
-  if (jobId !== undefined && jobId != 0) {
-    getJob(jobId).then(response => {
-      queryParams.value.jobName = response.data.jobName;
-      queryParams.value.jobGroup = response.data.jobGroup;
-      getList();
-    });
-  } else {
-    getList();
-  }
-})();
-
-getList();
-</script>

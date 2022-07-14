@@ -1,3 +1,17 @@
+
+<script setup lang="ts">
+withDefaults(defineProps<{
+  isActive:boolean
+}>(),{
+  isActive:false
+})
+
+
+const emit = defineEmits<{(e:'toggleClick'):void}>()
+const toggleClick = () => {
+  emit('toggleClick');
+}
+</script>
 <template>
   <div style="padding: 0 15px;" @click="toggleClick">
     <svg
@@ -13,20 +27,6 @@
   </div>
 </template>
 
-<script setup lang="ts">
-
-defineProps({
-  isActive: {
-    type: Boolean,
-    default: false
-  }
-})
-
-const emit = defineEmits()
-const toggleClick = () => {
-  emit('toggleClick');
-}
-</script>
 
 <style scoped>
 .hamburger {

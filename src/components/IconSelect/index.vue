@@ -1,23 +1,3 @@
-<template>
-  <div class="icon-body">
-    <el-input
-      v-model="iconName"
-      style="position: relative;"
-      clearable
-      placeholder="请输入图标名称"
-      @clear="filterIcons"
-      @input="filterIcons"
-    >
-      <template #suffix><i class="el-icon-search el-input__icon" /></template>
-    </el-input>
-    <div class="icon-list">
-      <div v-for="(item, index) in iconList" :key="index" @click="selectedIcon(item)">
-        <svg-icon :icon-class="item" style="height: 30px;width: 16px;" />
-        <span>{{ item }}</span>
-      </div>
-    </div>
-  </div>
-</template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
@@ -48,6 +28,27 @@ defineExpose({
   reset
 })
 </script>
+<template>
+  <div class="icon-body">
+    <el-input
+      v-model="iconName"
+      style="position: relative;"
+      clearable
+      placeholder="请输入图标名称"
+      @clear="filterIcons"
+      @input="filterIcons"
+    >
+      <template #suffix><i class="el-icon-search el-input__icon" /></template>
+    </el-input>
+    <div class="icon-list">
+      <div v-for="(item, index) in iconList" :key="index" @click="selectedIcon(item)">
+        <svg-icon :icon-class="item" style="height: 30px;width: 16px;" />
+        <span>{{ item }}</span>
+      </div>
+    </div>
+  </div>
+</template>
+
 
 <style lang='scss' scoped>
 .icon-body {

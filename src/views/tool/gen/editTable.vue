@@ -1,3 +1,77 @@
+
+<script setup name="GenEdit" lang="ts">
+import { getGenTable, updateGenTable } from "@/api/tool/gen";
+import { optionselect as getDictOptionselect } from "@/api/system/dict/type";
+import basicInfoForm from "./basicInfoForm.vue";
+import genInfoForm from "./genInfoForm.vue";
+import { getCurrentInstance, ref } from "vue";
+import { useRoute } from "vue-router";
+
+const route = useRoute();
+const { proxy }:any = getCurrentInstance();
+
+const activeName = ref("columnInfo");
+const tableHeight = ref(document.documentElement.scrollHeight - 245 + "px");
+const tables = ref([]);
+const columns = ref([]);
+const dictOptions = ref<any>([]);
+const info = ref<any>({});
+
+/** 提交按钮 */
+function submitForm() {
+  const basicForm = proxy.$refs.basicInfo.$refs.basicInfoForm;
+  const genForm = proxy.$refs.genInfo.$refs.genInfoForm;
+  Promise.all([basicForm, genForm].map(getFormPromise)).then(res => {
+    const validateResult = res.every(item => !!item);
+    if (validateResult) {
+      const genTable:any = Object.assign({}, info.value);
+      genTable.columns = columns.value;
+      genTable.params = {
+        treeCode: info.value.treeCode,
+        treeName: info.value.treeName,
+        treeParentCode: info.value.treeParentCode,
+        parentMenuId: info.value.parentMenuId
+      };
+      updateGenTable(genTable).then((res:any) => {
+        proxy.$modal.msgSuccess(res.msg);
+        if (res.code === 200) {
+          close();
+        }
+      });
+    } else {
+      proxy.$modal.msgError("表单校验未通过，请重新检查提交内容");
+    }
+  });
+}
+function getFormPromise(form: { validate: (arg0: (res: any) => void) => void; }) {
+  return new Promise(resolve => {
+    form.validate((res:any) => {
+      resolve(res);
+    });
+  });
+}
+function close() {
+  const obj = { path: "/tool/gen", query: { t: Date.now(), pageNum: route.query.pageNum } };
+  proxy.$tab.closeOpenPage(obj);
+}
+
+(() => {
+  const tableId:any = route.params && route.params.tableId;
+  if (tableId) {
+    // 获取表详细信息
+    getGenTable(tableId).then(res => {
+      columns.value = res.data.rows;
+      info.value = res.data.info;
+      tables.value = res.data.tables;
+    });
+    /** 查询字典下拉列表 */
+    getDictOptionselect().then(response => {
+      dictOptions.value = response.data;
+    });
+  }
+})();
+</script>
+
 <template>
   <el-card>
     <el-tabs v-model="activeName">
@@ -125,76 +199,3 @@
     </el-form>
   </el-card>
 </template>
-
-<script setup name="GenEdit" lang="ts">
-import { getGenTable, updateGenTable } from "@/api/tool/gen";
-import { optionselect as getDictOptionselect } from "@/api/system/dict/type";
-import basicInfoForm from "./basicInfoForm.vue";
-import genInfoForm from "./genInfoForm.vue";
-import { getCurrentInstance, ref } from "vue";
-import { useRoute } from "vue-router";
-
-const route = useRoute();
-const { proxy }:any = getCurrentInstance();
-
-const activeName = ref("columnInfo");
-const tableHeight = ref(document.documentElement.scrollHeight - 245 + "px");
-const tables = ref([]);
-const columns = ref([]);
-const dictOptions = ref<any>([]);
-const info = ref<any>({});
-
-/** 提交按钮 */
-function submitForm() {
-  const basicForm = proxy.$refs.basicInfo.$refs.basicInfoForm;
-  const genForm = proxy.$refs.genInfo.$refs.genInfoForm;
-  Promise.all([basicForm, genForm].map(getFormPromise)).then(res => {
-    const validateResult = res.every(item => !!item);
-    if (validateResult) {
-      const genTable:any = Object.assign({}, info.value);
-      genTable.columns = columns.value;
-      genTable.params = {
-        treeCode: info.value.treeCode,
-        treeName: info.value.treeName,
-        treeParentCode: info.value.treeParentCode,
-        parentMenuId: info.value.parentMenuId
-      };
-      updateGenTable(genTable).then((res:any) => {
-        proxy.$modal.msgSuccess(res.msg);
-        if (res.code === 200) {
-          close();
-        }
-      });
-    } else {
-      proxy.$modal.msgError("表单校验未通过，请重新检查提交内容");
-    }
-  });
-}
-function getFormPromise(form: { validate: (arg0: (res: any) => void) => void; }) {
-  return new Promise(resolve => {
-    form.validate((res:any) => {
-      resolve(res);
-    });
-  });
-}
-function close() {
-  const obj = { path: "/tool/gen", query: { t: Date.now(), pageNum: route.query.pageNum } };
-  proxy.$tab.closeOpenPage(obj);
-}
-
-(() => {
-  const tableId:any = route.params && route.params.tableId;
-  if (tableId) {
-    // 获取表详细信息
-    getGenTable(tableId).then(res => {
-      columns.value = res.data.rows;
-      info.value = res.data.info;
-      tables.value = res.data.tables;
-    });
-    /** 查询字典下拉列表 */
-    getDictOptionselect().then(response => {
-      dictOptions.value = response.data;
-    });
-  }
-})();
-</script>

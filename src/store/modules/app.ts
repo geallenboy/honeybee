@@ -5,9 +5,13 @@ import { defineStore } from 'pinia';
 const useAppStore = defineStore(
   'app',
   {
-    state: () => (<{sidebar:any,device:any,size:any}>{
+    state: () => (<{sidebar:{
+      opened:boolean,
+      withoutAnimation?:boolean,
+      hide:boolean
+    },device:string,size:string}>{
       sidebar: {
-        opened: Cookies.get('sidebarStatus') ? Cookies.get('sidebarStatus') : true,
+        opened: Cookies.get('sidebarStatus')==="1" ? true : false,
         withoutAnimation: false,
         hide: false
       },
@@ -27,7 +31,7 @@ const useAppStore = defineStore(
           Cookies.set('sidebarStatus', "0")
         }
       },
-      closeSideBar(withoutAnimation: any) {
+      closeSideBar(withoutAnimation:boolean) {
         Cookies.set('sidebarStatus', "0")
         this.sidebar.opened = false
         this.sidebar.withoutAnimation = withoutAnimation

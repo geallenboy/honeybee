@@ -1,3 +1,19 @@
+
+<script setup lang="ts">
+import variables from '@/assets/styles/variables.module.scss'
+import logo from '@/assets/logo/logo.png'
+import useSettingsStore from '@/store/modules/settings'
+import { computed, ref } from 'vue';
+
+defineProps<{
+  collapse?:boolean
+}>()
+
+const title = ref('若依管理系统');
+const settingsStore = useSettingsStore();
+const sideTheme = computed(() => settingsStore.sideTheme);
+</script>
+
 <template>
   <div class="sidebar-logo-container" :class="{ 'collapse': collapse }" :style="{ backgroundColor: sideTheme === 'theme-dark' ? variables.menuBackground : variables.menuLightBackground }">
     <transition name="sidebarLogoFade">
@@ -13,23 +29,6 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import variables from '@/assets/styles/variables.module.scss'
-import logo from '@/assets/logo/logo.png'
-import useSettingsStore from '@/store/modules/settings'
-import { computed, ref } from 'vue';
-
-defineProps({
-  collapse: {
-    type: Boolean,
-    required: true
-  }
-})
-
-const title = ref('若依管理系统');
-const settingsStore = useSettingsStore();
-const sideTheme = computed(() => settingsStore.sideTheme);
-</script>
 
 <style lang="scss" scoped>
 .sidebarLogoFade-enter-active {

@@ -3,16 +3,24 @@ import { getToken, setToken, removeToken } from '@/utils/auth'
 import defAva from '@/assets/images/profile.jpg'
 import { defineStore } from 'pinia'
 
+interface stateProps  {
+  token:string|undefined,
+  name:string,
+  avatar:string,
+  roles:any[],
+  permissions:any[]
+
+}
 const useUserStore = defineStore(
   'user',
   {
-    state: () => ({
+    state: () => <stateProps>({
       token: getToken(),
       name: '',
       avatar: '',
       roles: [],
       permissions: []
-    } as any),
+    }),
     actions: {
       // 登录
       login(userInfo:any) {

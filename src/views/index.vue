@@ -1,3 +1,12 @@
+
+<script setup name="Index" lang="ts">
+import { ref } from "vue"
+const version = ref('3.8.3')
+
+function goTarget(url:string) {
+  window.open(url, '__blank')
+}
+</script>
 <template>
   <div class="app-container home">
 
@@ -69,14 +78,6 @@
   </div>
 </template>
 
-<script setup name="Index" lang="ts">
-import { ref } from "vue"
-const version = ref('3.8.3')
-
-function goTarget(url:string) {
-  window.open(url, '__blank')
-}
-</script>
 
 <style scoped lang="scss">
 .home {

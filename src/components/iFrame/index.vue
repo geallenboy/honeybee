@@ -1,15 +1,5 @@
 
 
-<template>
-  <div v-loading="loading" :style="'height:' + height">
-    <iframe
-      :src="url"
-      frameborder="no"
-      style="width: 100%; height: 100%"
-      scrolling="auto" />
-  </div>
-</template>
-
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue"
 const props = defineProps({
@@ -32,3 +22,13 @@ onMounted(() => {
   };
 })
 </script>
+<template>
+  <div v-loading="loading" :style="'height:' + height">
+    <iframe
+      :src="url"
+      frameborder="no"
+      style="width: 100%; height: 100%"
+      scrolling="auto" />
+  </div>
+</template>
+

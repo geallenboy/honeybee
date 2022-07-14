@@ -1,3 +1,19 @@
+
+<script setup lang="ts">
+import { ref } from 'vue';
+withDefaults(defineProps<{info:any}>(),{
+  info:null
+})
+
+
+// 表单校验
+const rules = ref({
+  tableName: [{ required: true, message: "请输入表名称", trigger: "blur" }],
+  tableComment: [{ required: true, message: "请输入表描述", trigger: "blur" }],
+  className: [{ required: true, message: "请输入实体类名称", trigger: "blur" }],
+  functionAuthor: [{ required: true, message: "请输入作者", trigger: "blur" }]
+});
+</script>
 <template>
   <el-form ref="basicInfoForm" :model="info" :rules="rules" label-width="150px">
     <el-row>
@@ -30,21 +46,3 @@
   </el-form>
 </template>
 
-<script setup lang="ts">
-import { ref } from 'vue';
-
-defineProps({
-  info: {
-    type: Object,
-    default: null
-  }
-});
-
-// 表单校验
-const rules = ref({
-  tableName: [{ required: true, message: "请输入表名称", trigger: "blur" }],
-  tableComment: [{ required: true, message: "请输入表描述", trigger: "blur" }],
-  className: [{ required: true, message: "请输入实体类名称", trigger: "blur" }],
-  functionAuthor: [{ required: true, message: "请输入作者", trigger: "blur" }]
-});
-</script>

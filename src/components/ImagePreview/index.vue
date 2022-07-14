@@ -1,18 +1,3 @@
-<template>
-  <el-image
-    :src="`${realSrc}`"
-    fit="cover"
-    :style="`width:${realWidth};height:${realHeight};`"
-    :preview-src-list="realSrcList"
-    append-to-body="true"
-  >
-    <template #error>
-      <div class="image-slot">
-        <el-icon><picture-filled /></el-icon>
-      </div>
-    </template>
-  </el-image>
-</template>
 
 <script setup lang="ts">
 import { isExternal } from "@/utils/validate";
@@ -61,6 +46,22 @@ const realHeight = computed(() =>
   typeof props.height == "string" ? props.height : `${props.height}px`
 );
 </script>
+<template>
+  <el-image
+    :src="`${realSrc}`"
+    fit="cover"
+    :style="`width:${realWidth};height:${realHeight};`"
+    :preview-src-list="realSrcList"
+    append-to-body="true"
+  >
+    <template #error>
+      <div class="image-slot">
+        <el-icon><picture-filled /></el-icon>
+      </div>
+    </template>
+  </el-image>
+</template>
+
 
 <style lang="scss" scoped>
 .el-image {

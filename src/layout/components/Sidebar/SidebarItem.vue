@@ -1,31 +1,3 @@
-<template>
-  <div v-if="!item.hidden">
-    <template v-if="hasOneShowingChild(item.children, item) && (!onlyOneChild.children || onlyOneChild.noShowingChildren) && !item.alwaysShow">
-      <app-link v-if="onlyOneChild.meta" :to="resolvePath(onlyOneChild.path, onlyOneChild.query)">
-        <el-menu-item :index="resolvePath(onlyOneChild.path)" :class="{ 'submenu-title-noDropdown': !isNest }">
-          <svg-icon :icon-class="onlyOneChild.meta.icon || (item.meta && item.meta.icon)"/>
-          <template #title><span class="menu-title" :title="hasTitle(onlyOneChild.meta.title)">{{ onlyOneChild.meta.title }}</span></template>
-        </el-menu-item>
-      </app-link>
-    </template>
-
-    <el-sub-menu v-else ref="subMenu" :index="resolvePath(item.path)" popper-append-to-body>
-      <template v-if="item.meta" #title>
-        <svg-icon :icon-class="item.meta && item.meta.icon" />
-        <span class="menu-title" :title="hasTitle(item.meta.title)">{{ item.meta.title }}</span>
-      </template>
-
-      <sidebar-item
-        v-for="child in item.children"
-        :key="child.path"
-        :is-nest="true"
-        :item="child"
-        :base-path="resolvePath(child.path)"
-        class="nest-menu"
-      />
-    </el-sub-menu>
-  </div>
-</template>
 
 <script setup lang="ts">
 import { isExternal } from '@/utils/validate'
@@ -33,23 +5,17 @@ import AppLink from './Link.vue'
 import { getNormalPath } from '@/utils/main'
 import { ref } from 'vue';
 
-const props = defineProps({
-  // route object
-  item: {
-    type: Object,
-    required: true
-  },
-  isNest: {
-    type: Boolean,
-    default: false
-  },
-  basePath: {
-    type: String,
-    default: ''
-  }
+interface Props {
+  item:any,
+  isNest?:boolean,
+  basePath:string
+}
+
+const props =  withDefaults(defineProps<Props>(),{
+  basePath:''
 })
 
-const onlyOneChild = ref({});
+const onlyOneChild = ref<any>({});
 
 function hasOneShowingChild(children = [], parent: {}) {
   if (!children) {
@@ -79,7 +45,7 @@ function hasOneShowingChild(children = [], parent: {}) {
   return false
 };
 
-function resolvePath(routePath: string, routeQuery: string) {
+function resolvePath(routePath: any, routeQuery?: any) {
   if (isExternal(routePath)) {
     return routePath
   }
@@ -93,7 +59,7 @@ function resolvePath(routePath: string, routeQuery: string) {
   return getNormalPath(props.basePath + '/' + routePath)
 }
 
-function hasTitle(title: string|any[]){
+function hasTitle(title: any){
   if (title.length > 5) {
     return title;
   } else {
@@ -101,3 +67,32 @@ function hasTitle(title: string|any[]){
   }
 }
 </script>
+<template>
+  <div v-if="!item.hidden">
+    <template v-if="hasOneShowingChild(item.children, item) && (!onlyOneChild.children || onlyOneChild.noShowingChildren) && !item.alwaysShow">
+      <app-link v-if="onlyOneChild.meta" :to="resolvePath(onlyOneChild.path, onlyOneChild.query)">
+        <el-menu-item :index="resolvePath(onlyOneChild.path)" :class="{ 'submenu-title-noDropdown': !isNest }">
+          <svg-icon :icon-class="onlyOneChild.meta.icon || (item.meta && item.meta.icon)"/>
+          <template #title><span class="menu-title" :title="hasTitle(onlyOneChild.meta.title)">{{ onlyOneChild.meta.title }}</span></template>
+        </el-menu-item>
+      </app-link>
+    </template>
+
+    <el-sub-menu v-else ref="subMenu" :index="resolvePath(item.path)" popper-append-to-body>
+      <template v-if="item.meta" #title>
+        <svg-icon :icon-class="item.meta && item.meta.icon" />
+        <span class="menu-title" :title="hasTitle(item.meta.title)">{{ item.meta.title }}</span>
+      </template>
+
+      <sidebar-item
+        v-for="child in item.children"
+        :key="child.path"
+        :is-nest="true"
+        :item="child"
+        :base-path="resolvePath(child.path)"
+        class="nest-menu"
+      />
+    </el-sub-menu>
+  </div>
+</template>
+

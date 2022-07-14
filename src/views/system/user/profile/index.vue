@@ -1,3 +1,29 @@
+
+<script setup name="Profile" lang="ts">
+import userAvatar from "./userAvatar.vue";
+import userInfo from "./userInfo.vue";
+import resetPwd from "./resetPwd.vue";
+import { getUserProfile } from "@/api/system/user";
+import { ref, reactive } from "vue";
+
+const activeTab = ref("userinfo");
+const state = reactive<any>({
+  user: {},
+  roleGroup: {},
+  postGroup: {}
+});
+
+function getUser() {
+  getUserProfile().then((response:any) => {
+    state.user = response.data;
+    state.roleGroup = response.roleGroup;
+    state.postGroup = response.postGroup;
+  });
+};
+
+getUser();
+</script>
+
 <template>
    <div class="app-container">
       <el-row :gutter="20">
@@ -61,28 +87,3 @@
       </el-row>
    </div>
 </template>
-
-<script setup name="Profile" lang="ts">
-import userAvatar from "./userAvatar.vue";
-import userInfo from "./userInfo.vue";
-import resetPwd from "./resetPwd.vue";
-import { getUserProfile } from "@/api/system/user";
-import { ref, reactive } from "vue";
-
-const activeTab = ref("userinfo");
-const state = reactive<any>({
-  user: {},
-  roleGroup: {},
-  postGroup: {}
-});
-
-function getUser() {
-  getUserProfile().then((response:any) => {
-    state.user = response.data;
-    state.roleGroup = response.roleGroup;
-    state.postGroup = response.postGroup;
-  });
-};
-
-getUser();
-</script>

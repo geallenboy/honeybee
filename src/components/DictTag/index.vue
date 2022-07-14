@@ -1,5 +1,19 @@
 
 
+<script setup lang="ts">
+import { computed } from "vue";
+
+const props = withDefaults(defineProps<{options:any,value:any}>(),{options:null})
+
+const values = computed(() => {
+  if (props.value !== null && typeof props.value !== 'undefined') {
+    return Array.isArray(props.value) ? props.value : [String(props.value)];
+  } else {
+    return [];
+  }
+})
+
+</script>
 <template>
   <div>
     <template v-for="(item, index) in options">
@@ -23,27 +37,6 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { computed } from "vue";
-const props = defineProps({
-  // 数据
-  options: {
-    type: Array,
-    default: null,
-  },
-  // 当前的值
-  value: [Number, String, Array],
-})
-
-const values = computed(() => {
-  if (props.value !== null && typeof props.value !== 'undefined') {
-    return Array.isArray(props.value) ? props.value : [String(props.value)];
-  } else {
-    return [];
-  }
-})
-
-</script>
 
 <style scoped>
 .el-tag + .el-tag {

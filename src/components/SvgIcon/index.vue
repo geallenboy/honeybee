@@ -1,8 +1,3 @@
-<template>
-  <svg :class="svgClass" aria-hidden="true">
-    <use :xlink:href="iconName" :fill="color" />
-  </svg>
-</template>
 
 <script >
 export default defineComponent({
@@ -33,6 +28,12 @@ export default defineComponent({
   }
 })
 </script>
+<template>
+  <svg :class="svgClass" aria-hidden="true">
+    <use :xlink:href="iconName" :fill="color" />
+  </svg>
+</template>
+
 
 <style scope lang="scss">
 .sub-el-icon,

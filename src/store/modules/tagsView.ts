@@ -1,12 +1,17 @@
 import { defineStore } from 'pinia'
 
+interface stateProps {
+  visitedViews:any[],
+  cachedViews:any[]
+}
+
 const useTagsViewStore = defineStore(
   'tags-view',
   {
-    state: () => ({
+    state: () => <stateProps>({
       visitedViews: [] ,
       cachedViews: []
-    } as any),
+    }),
     actions: {
       addView(view:any) {
         this.addVisitedView(view)

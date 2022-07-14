@@ -1,4 +1,85 @@
 
+<script setup name="AuthUser" lang="ts">
+import selectUser from "./selectUser.vue";
+import { allocatedUserList, authUserCancel, authUserCancelAll } from "@/api/system/role";
+import { getCurrentInstance, ref, reactive } from "vue";
+import { useRoute } from "vue-router";
+
+const route = useRoute();
+const { proxy }:any = getCurrentInstance();
+const { sys_normal_disable } = proxy.useDict("sys_normal_disable");
+
+const userList = ref([]);
+const loading = ref(true);
+const showSearch = ref(true);
+const multiple = ref(true);
+const total = ref(0);
+const userIds = ref([]);
+
+const queryParams = reactive({
+  pageNum: 1,
+  pageSize: 10,
+  roleId: route.params.roleId,
+  userName: undefined,
+  phonenumber: undefined,
+});
+
+/** 查询授权用户列表 */
+function getList() {
+  loading.value = true;
+  allocatedUserList(queryParams).then((response:any) => {
+    userList.value = response.rows;
+    total.value = response.total;
+    loading.value = false;
+  });
+}
+// 返回按钮
+function handleClose() {
+  const obj = { path: "/system/role" };
+  proxy.$tab.closeOpenPage(obj);
+}
+/** 搜索按钮操作 */
+function handleQuery() {
+  queryParams.pageNum = 1;
+  getList();
+}
+/** 重置按钮操作 */
+function resetQuery() {
+  proxy.resetForm("queryRef");
+  handleQuery();
+}
+// 多选框选中数据
+function handleSelectionChange(selection: { map: (arg0: (item: any) => any) => never[]; length: any; }) {
+  userIds.value = selection.map((item: { userId: any; }) => item.userId);
+  multiple.value = !selection.length;
+}
+/** 打开授权用户表弹窗 */
+function openSelectUser() {
+  proxy.$refs["selectRef"].show();
+}
+/** 取消授权按钮操作 */
+function cancelAuthUser(row: { userName: string; userId: any; }) {
+  proxy.$modal.confirm('确认要取消该用户"' + row.userName + '"角色吗？').then(function () {
+    return authUserCancel({ userId: row.userId, roleId: queryParams.roleId });
+  }).then(() => {
+    getList();
+    proxy.$modal.msgSuccess("取消授权成功");
+  }).catch(() => {});
+}
+/** 批量取消授权按钮操作 */
+function cancelAuthUserAll(row: any) {
+  const roleId = queryParams.roleId;
+  const uIds = userIds.value.join(",");
+  proxy.$modal.confirm("是否取消选中用户授权数据项?").then(function () {
+    return authUserCancelAll({ roleId: roleId, userIds: uIds });
+  }).then(() => {
+    getList();
+    proxy.$modal.msgSuccess("取消授权成功");
+  }).catch(() => {});
+}
+
+getList();
+</script>
 <template>
    <div class="app-container">
       <el-form :model="queryParams" ref="queryRef" v-show="showSearch" :inline="true">
@@ -96,84 +177,3 @@
    </div>
 </template>
 
-<script setup name="AuthUser" lang="ts">
-import selectUser from "./selectUser.vue";
-import { allocatedUserList, authUserCancel, authUserCancelAll } from "@/api/system/role";
-import { getCurrentInstance, ref, reactive } from "vue";
-import { useRoute } from "vue-router";
-
-const route = useRoute();
-const { proxy }:any = getCurrentInstance();
-const { sys_normal_disable } = proxy.useDict("sys_normal_disable");
-
-const userList = ref([]);
-const loading = ref(true);
-const showSearch = ref(true);
-const multiple = ref(true);
-const total = ref(0);
-const userIds = ref([]);
-
-const queryParams = reactive({
-  pageNum: 1,
-  pageSize: 10,
-  roleId: route.params.roleId,
-  userName: undefined,
-  phonenumber: undefined,
-});
-
-/** 查询授权用户列表 */
-function getList() {
-  loading.value = true;
-  allocatedUserList(queryParams).then((response:any) => {
-    userList.value = response.rows;
-    total.value = response.total;
-    loading.value = false;
-  });
-}
-// 返回按钮
-function handleClose() {
-  const obj = { path: "/system/role" };
-  proxy.$tab.closeOpenPage(obj);
-}
-/** 搜索按钮操作 */
-function handleQuery() {
-  queryParams.pageNum = 1;
-  getList();
-}
-/** 重置按钮操作 */
-function resetQuery() {
-  proxy.resetForm("queryRef");
-  handleQuery();
-}
-// 多选框选中数据
-function handleSelectionChange(selection: { map: (arg0: (item: any) => any) => never[]; length: any; }) {
-  userIds.value = selection.map((item: { userId: any; }) => item.userId);
-  multiple.value = !selection.length;
-}
-/** 打开授权用户表弹窗 */
-function openSelectUser() {
-  proxy.$refs["selectRef"].show();
-}
-/** 取消授权按钮操作 */
-function cancelAuthUser(row: { userName: string; userId: any; }) {
-  proxy.$modal.confirm('确认要取消该用户"' + row.userName + '"角色吗？').then(function () {
-    return authUserCancel({ userId: row.userId, roleId: queryParams.roleId });
-  }).then(() => {
-    getList();
-    proxy.$modal.msgSuccess("取消授权成功");
-  }).catch(() => {});
-}
-/** 批量取消授权按钮操作 */
-function cancelAuthUserAll(row: any) {
-  const roleId = queryParams.roleId;
-  const uIds = userIds.value.join(",");
-  proxy.$modal.confirm("是否取消选中用户授权数据项?").then(function () {
-    return authUserCancelAll({ roleId: roleId, userIds: uIds });
-  }).then(() => {
-    getList();
-    proxy.$modal.msgSuccess("取消授权成功");
-  }).catch(() => {});
-}
-
-getList();
-</script>

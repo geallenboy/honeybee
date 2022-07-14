@@ -1,3 +1,294 @@
+
+
+<script setup name="User" lang="ts">
+import { getToken } from "@/utils/auth";
+import { treeselect } from "@/api/system/dept";
+import { changeUserStatus, listUser, resetUserPwd, delUser, getUser, updateUser, addUser } from "@/api/system/user";
+
+import { watch,getCurrentInstance, ref, reactive, toRefs } from "vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+const { proxy }:any = getCurrentInstance();
+const { sys_normal_disable, sys_user_sex } = proxy.useDict("sys_normal_disable", "sys_user_sex");
+
+const userList = ref([]);
+const open = ref(false);
+const loading = ref(true);
+const showSearch = ref(true);
+const ids = ref([]);
+const single = ref(true);
+const multiple = ref(true);
+const total = ref(0);
+const title = ref("");
+const dateRange = ref([]);
+const deptName = ref("");
+const deptOptions = ref(undefined);
+const initPassword = ref(undefined);
+const postOptions = ref<any>([]);
+const roleOptions = ref<any>([]);
+/*** 用户导入参数 */
+const upload = reactive({
+  // 是否显示弹出层（用户导入）
+  open: false,
+  // 弹出层标题（用户导入）
+  title: "",
+  // 是否禁用上传
+  isUploading: false,
+  // 是否更新已经存在的用户数据
+  updateSupport: 0,
+  // 设置上传的请求头部
+  headers: { Authorization: "Bearer " + getToken() },
+  // 上传的地址
+  url: import.meta.env.VITE_APP_BASE_API + "/system/user/importData"
+});
+// 列显隐信息
+const columns = ref([
+  { key: 0, label: `用户编号`, visible: true },
+  { key: 1, label: `用户名称`, visible: true },
+  { key: 2, label: `用户昵称`, visible: true },
+  { key: 3, label: `部门`, visible: true },
+  { key: 4, label: `手机号码`, visible: true },
+  { key: 5, label: `状态`, visible: true },
+  { key: 6, label: `创建时间`, visible: true }
+]);
+
+const data = reactive({
+  form: {},
+  queryParams: {
+    pageNum: 1,
+    pageSize: 10,
+    userName: undefined,
+    phonenumber: undefined,
+    status: undefined,
+    deptId: undefined
+  },
+  rules: {
+    userName: [{ required: true, message: "用户名称不能为空", trigger: "blur" }, { min: 2, max: 20, message: "用户名称长度必须介于 2 和 20 之间", trigger: "blur" }],
+    nickName: [{ required: true, message: "用户昵称不能为空", trigger: "blur" }],
+    password: [{ required: true, message: "用户密码不能为空", trigger: "blur" }, { min: 5, max: 20, message: "用户密码长度必须介于 5 和 20 之间", trigger: "blur" }],
+    email: [{ type: "email", message: "请输入正确的邮箱地址", trigger: ["blur", "change"] }],
+    phonenumber: [{ pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/, message: "请输入正确的手机号码", trigger: "blur" }]
+  }
+});
+
+const { queryParams, form, rules }:any = toRefs(data);
+
+/** 通过条件过滤节点  */
+const filterNode = (value: any, data: { label: string | any[]; }) => {
+  if (!value) return true;
+  return data.label.indexOf(value) !== -1;
+};
+/** 根据名称筛选部门树 */
+watch(deptName, val => {
+  proxy.$refs["deptTreeRef"].filter(val);
+});
+/** 查询部门下拉树结构 */
+function getTreeselect() {
+  treeselect().then(response => {
+    deptOptions.value = response.data;
+  });
+};
+/** 查询用户列表 */
+function getList() {
+  loading.value = true;
+  listUser(proxy.addDateRange(queryParams.value, dateRange.value)).then((res:any) => {
+    loading.value = false;
+    userList.value = res.rows;
+    total.value = res.total;
+  });
+};
+/** 节点单击事件 */
+function handleNodeClick(data: { id: undefined; }) {
+  queryParams.value.deptId = data.id;
+  handleQuery();
+};
+/** 搜索按钮操作 */
+function handleQuery() {
+  queryParams.value.pageNum = 1;
+  getList();
+};
+/** 重置按钮操作 */
+function resetQuery() {
+  dateRange.value = [];
+  proxy.resetForm("queryRef");
+  handleQuery();
+};
+/** 删除按钮操作 */
+function handleDelete(row: { userId: never[]; }) {
+  const userIds:any = row.userId || ids.value;
+  proxy.$modal.confirm('是否确认删除用户编号为"' + userIds + '"的数据项？').then(function () {
+    return delUser(userIds);
+  }).then(() => {
+    getList();
+    proxy.$modal.msgSuccess("删除成功");
+  }).catch(() => {});
+};
+/** 导出按钮操作 */
+function handleExport() {
+  proxy.download("system/user/export", {
+    ...queryParams.value,
+  },`user_${new Date().getTime()}.xlsx`);
+};
+/** 用户状态修改  */
+function handleStatusChange(row: { status: string; userName: string; userId: any; }) {
+  let text = row.status === "0" ? "启用" : "停用";
+  proxy.$modal.confirm('确认要"' + text + '""' + row.userName + '"用户吗?').then(function () {
+    return changeUserStatus(row.userId, row.status);
+  }).then(() => {
+    proxy.$modal.msgSuccess(text + "成功");
+  }).catch(function () {
+    row.status = row.status === "0" ? "1" : "0";
+  });
+};
+/** 更多操作 */
+function handleCommand(command: any, row: any) {
+  switch (command) {
+    case "handleResetPwd":
+      handleResetPwd(row);
+      break;
+    case "handleAuthRole":
+      handleAuthRole(row);
+      break;
+    default:
+      break;
+  }
+};
+/** 跳转角色分配 */
+function handleAuthRole(row: { userId: any; }) {
+  const userId = row.userId;
+  router.push("/system/user-auth/role/" + userId);
+};
+/** 重置密码按钮操作 */
+function handleResetPwd(row: { userName: string; userId: any; }) {
+  proxy.$prompt('请输入"' + row.userName + '"的新密码', "提示", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    closeOnClickModal: false,
+    inputPattern: /^.{5,20}$/,
+    inputErrorMessage: "用户密码长度必须介于 5 和 20 之间",
+  }).then(({ value }:any) => {
+    resetUserPwd(row.userId, value).then(response => {
+      proxy.$modal.msgSuccess("修改成功，新密码是：" + value);
+    });
+  }).catch(() => {});
+};
+/** 选择条数  */
+function handleSelectionChange(selection: { map: (arg0: (item: any) => any) => never[]; length: number; }) {
+  ids.value = selection.map((item: { userId: any; }) => item.userId);
+  single.value = selection.length != 1;
+  multiple.value = !selection.length;
+};
+/** 导入按钮操作 */
+function handleImport() {
+  upload.title = "用户导入";
+  upload.open = true;
+};
+/** 下载模板操作 */
+function importTemplate() {
+  proxy.download("system/user/importTemplate", {
+  }, `user_template_${new Date().getTime()}.xlsx`);
+};
+/**文件上传中处理 */
+const handleFileUploadProgress = (event: any, file: any, fileList: any) => {
+  upload.isUploading = true;
+};
+/** 文件上传成功处理 */
+const handleFileSuccess = (response: { msg: string; }, file: any, fileList: any) => {
+  upload.open = false;
+  upload.isUploading = false;
+  proxy.$refs["uploadRef"].handleRemove(file);
+  proxy.$alert("<div style='overflow: auto;overflow-x: hidden;max-height: 70vh;padding: 10px 20px 0;'>" + response.msg + "</div>", "导入结果", { dangerouslyUseHTMLString: true });
+  getList();
+};
+/** 提交上传文件 */
+function submitFileForm() {
+  proxy.$refs["uploadRef"].submit();
+};
+/** 初始化部门数据 */
+function initTreeData() {
+  // 判断部门的数据是否存在，存在不获取，不存在则获取
+  if (deptOptions.value === undefined) {
+    treeselect().then(response => {
+      deptOptions.value = response.data;
+    });
+  }
+};
+/** 重置操作表单 */
+function reset() {
+  form.value = {
+    userId: undefined,
+    deptId: undefined,
+    userName: undefined,
+    nickName: undefined,
+    password: undefined,
+    phonenumber: undefined,
+    email: undefined,
+    sex: undefined,
+    status: "0",
+    remark: undefined,
+    postIds: [],
+    roleIds: []
+  };
+  proxy.resetForm("userRef");
+};
+/** 取消按钮 */
+function cancel() {
+  open.value = false;
+  reset();
+};
+/** 新增按钮操作 */
+function handleAdd() {
+  reset();
+  initTreeData();
+  getUser().then((response:any) => {
+    postOptions.value = response.posts;
+    roleOptions.value = response.roles;
+    open.value = true;
+    title.value = "添加用户";
+    form.value.password = initPassword.value;
+  });
+};
+/** 修改按钮操作 */
+function handleUpdate(row: { userId: never[]; }) {
+  reset();
+  initTreeData();
+  const userId = row.userId || ids.value;
+  getUser(userId).then((response:any) => {
+    form.value = response.data;
+    postOptions.value = response.posts;
+    roleOptions.value = response.roles;
+    form.value.postIds = response.postIds;
+    form.value.roleIds = response.roleIds;
+    open.value = true;
+    title.value = "修改用户";
+    form.password = "";
+  });
+};
+/** 提交按钮 */
+function submitForm() {
+  proxy.$refs["userRef"].validate((valid: any) => {
+    if (valid) {
+      if (form.value.userId != undefined) {
+        updateUser(form.value).then(response => {
+          proxy.$modal.msgSuccess("修改成功");
+          open.value = false;
+          getList();
+        });
+      } else {
+        addUser(form.value).then(response => {
+          proxy.$modal.msgSuccess("新增成功");
+          open.value = false;
+          getList();
+        });
+      }
+    }
+  });
+};
+
+getTreeselect();
+getList();
+</script>
 <template>
    <div class="app-container">
       <el-row :gutter="20">
@@ -348,292 +639,3 @@
    </div>
 </template>
 
-<script setup name="User" lang="ts">
-import { getToken } from "@/utils/auth";
-import { treeselect } from "@/api/system/dept";
-import { changeUserStatus, listUser, resetUserPwd, delUser, getUser, updateUser, addUser } from "@/api/system/user";
-
-import { watch,getCurrentInstance, ref, reactive, toRefs } from "vue";
-import { useRouter } from "vue-router";
-
-const router = useRouter();
-const { proxy }:any = getCurrentInstance();
-const { sys_normal_disable, sys_user_sex } = proxy.useDict("sys_normal_disable", "sys_user_sex");
-
-const userList = ref([]);
-const open = ref(false);
-const loading = ref(true);
-const showSearch = ref(true);
-const ids = ref([]);
-const single = ref(true);
-const multiple = ref(true);
-const total = ref(0);
-const title = ref("");
-const dateRange = ref([]);
-const deptName = ref("");
-const deptOptions = ref(undefined);
-const initPassword = ref(undefined);
-const postOptions = ref([]);
-const roleOptions = ref([]);
-/*** 用户导入参数 */
-const upload = reactive({
-  // 是否显示弹出层（用户导入）
-  open: false,
-  // 弹出层标题（用户导入）
-  title: "",
-  // 是否禁用上传
-  isUploading: false,
-  // 是否更新已经存在的用户数据
-  updateSupport: 0,
-  // 设置上传的请求头部
-  headers: { Authorization: "Bearer " + getToken() },
-  // 上传的地址
-  url: import.meta.env.VITE_APP_BASE_API + "/system/user/importData"
-});
-// 列显隐信息
-const columns = ref([
-  { key: 0, label: `用户编号`, visible: true },
-  { key: 1, label: `用户名称`, visible: true },
-  { key: 2, label: `用户昵称`, visible: true },
-  { key: 3, label: `部门`, visible: true },
-  { key: 4, label: `手机号码`, visible: true },
-  { key: 5, label: `状态`, visible: true },
-  { key: 6, label: `创建时间`, visible: true }
-]);
-
-const data = reactive({
-  form: {},
-  queryParams: {
-    pageNum: 1,
-    pageSize: 10,
-    userName: undefined,
-    phonenumber: undefined,
-    status: undefined,
-    deptId: undefined
-  },
-  rules: {
-    userName: [{ required: true, message: "用户名称不能为空", trigger: "blur" }, { min: 2, max: 20, message: "用户名称长度必须介于 2 和 20 之间", trigger: "blur" }],
-    nickName: [{ required: true, message: "用户昵称不能为空", trigger: "blur" }],
-    password: [{ required: true, message: "用户密码不能为空", trigger: "blur" }, { min: 5, max: 20, message: "用户密码长度必须介于 5 和 20 之间", trigger: "blur" }],
-    email: [{ type: "email", message: "请输入正确的邮箱地址", trigger: ["blur", "change"] }],
-    phonenumber: [{ pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/, message: "请输入正确的手机号码", trigger: "blur" }]
-  }
-});
-
-const { queryParams, form, rules } = toRefs(data);
-
-/** 通过条件过滤节点  */
-const filterNode = (value: any, data: { label: string | any[]; }) => {
-  if (!value) return true;
-  return data.label.indexOf(value) !== -1;
-};
-/** 根据名称筛选部门树 */
-watch(deptName, val => {
-  proxy.$refs["deptTreeRef"].filter(val);
-});
-/** 查询部门下拉树结构 */
-function getTreeselect() {
-  treeselect().then(response => {
-    deptOptions.value = response.data;
-  });
-};
-/** 查询用户列表 */
-function getList() {
-  loading.value = true;
-  listUser(proxy.addDateRange(queryParams.value, dateRange.value)).then((res:any) => {
-    loading.value = false;
-    userList.value = res.rows;
-    total.value = res.total;
-  });
-};
-/** 节点单击事件 */
-function handleNodeClick(data: { id: undefined; }) {
-  queryParams.value.deptId = data.id;
-  handleQuery();
-};
-/** 搜索按钮操作 */
-function handleQuery() {
-  queryParams.value.pageNum = 1;
-  getList();
-};
-/** 重置按钮操作 */
-function resetQuery() {
-  dateRange.value = [];
-  proxy.resetForm("queryRef");
-  handleQuery();
-};
-/** 删除按钮操作 */
-function handleDelete(row: { userId: never[]; }) {
-  const userIds:any = row.userId || ids.value;
-  proxy.$modal.confirm('是否确认删除用户编号为"' + userIds + '"的数据项？').then(function () {
-    return delUser(userIds);
-  }).then(() => {
-    getList();
-    proxy.$modal.msgSuccess("删除成功");
-  }).catch(() => {});
-};
-/** 导出按钮操作 */
-function handleExport() {
-  proxy.download("system/user/export", {
-    ...queryParams.value,
-  },`user_${new Date().getTime()}.xlsx`);
-};
-/** 用户状态修改  */
-function handleStatusChange(row: { status: string; userName: string; userId: any; }) {
-  let text = row.status === "0" ? "启用" : "停用";
-  proxy.$modal.confirm('确认要"' + text + '""' + row.userName + '"用户吗?').then(function () {
-    return changeUserStatus(row.userId, row.status);
-  }).then(() => {
-    proxy.$modal.msgSuccess(text + "成功");
-  }).catch(function () {
-    row.status = row.status === "0" ? "1" : "0";
-  });
-};
-/** 更多操作 */
-function handleCommand(command: any, row: any) {
-  switch (command) {
-    case "handleResetPwd":
-      handleResetPwd(row);
-      break;
-    case "handleAuthRole":
-      handleAuthRole(row);
-      break;
-    default:
-      break;
-  }
-};
-/** 跳转角色分配 */
-function handleAuthRole(row: { userId: any; }) {
-  const userId = row.userId;
-  router.push("/system/user-auth/role/" + userId);
-};
-/** 重置密码按钮操作 */
-function handleResetPwd(row: { userName: string; userId: any; }) {
-  proxy.$prompt('请输入"' + row.userName + '"的新密码', "提示", {
-    confirmButtonText: "确定",
-    cancelButtonText: "取消",
-    closeOnClickModal: false,
-    inputPattern: /^.{5,20}$/,
-    inputErrorMessage: "用户密码长度必须介于 5 和 20 之间",
-  }).then(({ value }:any) => {
-    resetUserPwd(row.userId, value).then(response => {
-      proxy.$modal.msgSuccess("修改成功，新密码是：" + value);
-    });
-  }).catch(() => {});
-};
-/** 选择条数  */
-function handleSelectionChange(selection: { map: (arg0: (item: any) => any) => never[]; length: number; }) {
-  ids.value = selection.map((item: { userId: any; }) => item.userId);
-  single.value = selection.length != 1;
-  multiple.value = !selection.length;
-};
-/** 导入按钮操作 */
-function handleImport() {
-  upload.title = "用户导入";
-  upload.open = true;
-};
-/** 下载模板操作 */
-function importTemplate() {
-  proxy.download("system/user/importTemplate", {
-  }, `user_template_${new Date().getTime()}.xlsx`);
-};
-/**文件上传中处理 */
-const handleFileUploadProgress = (event: any, file: any, fileList: any) => {
-  upload.isUploading = true;
-};
-/** 文件上传成功处理 */
-const handleFileSuccess = (response: { msg: string; }, file: any, fileList: any) => {
-  upload.open = false;
-  upload.isUploading = false;
-  proxy.$refs["uploadRef"].handleRemove(file);
-  proxy.$alert("<div style='overflow: auto;overflow-x: hidden;max-height: 70vh;padding: 10px 20px 0;'>" + response.msg + "</div>", "导入结果", { dangerouslyUseHTMLString: true });
-  getList();
-};
-/** 提交上传文件 */
-function submitFileForm() {
-  proxy.$refs["uploadRef"].submit();
-};
-/** 初始化部门数据 */
-function initTreeData() {
-  // 判断部门的数据是否存在，存在不获取，不存在则获取
-  if (deptOptions.value === undefined) {
-    treeselect().then(response => {
-      deptOptions.value = response.data;
-    });
-  }
-};
-/** 重置操作表单 */
-function reset() {
-  form.value = {
-    userId: undefined,
-    deptId: undefined,
-    userName: undefined,
-    nickName: undefined,
-    password: undefined,
-    phonenumber: undefined,
-    email: undefined,
-    sex: undefined,
-    status: "0",
-    remark: undefined,
-    postIds: [],
-    roleIds: []
-  };
-  proxy.resetForm("userRef");
-};
-/** 取消按钮 */
-function cancel() {
-  open.value = false;
-  reset();
-};
-/** 新增按钮操作 */
-function handleAdd() {
-  reset();
-  initTreeData();
-  getUser().then(response => {
-    postOptions.value = response.posts;
-    roleOptions.value = response.roles;
-    open.value = true;
-    title.value = "添加用户";
-    form.value.password = initPassword.value;
-  });
-};
-/** 修改按钮操作 */
-function handleUpdate(row: { userId: never[]; }) {
-  reset();
-  initTreeData();
-  const userId = row.userId || ids.value;
-  getUser(userId).then(response => {
-    form.value = response.data;
-    postOptions.value = response.posts;
-    roleOptions.value = response.roles;
-    form.value.postIds = response.postIds;
-    form.value.roleIds = response.roleIds;
-    open.value = true;
-    title.value = "修改用户";
-    form.password = "";
-  });
-};
-/** 提交按钮 */
-function submitForm() {
-  proxy.$refs["userRef"].validate((valid: any) => {
-    if (valid) {
-      if (form.value.userId != undefined) {
-        updateUser(form.value).then(response => {
-          proxy.$modal.msgSuccess("修改成功");
-          open.value = false;
-          getList();
-        });
-      } else {
-        addUser(form.value).then(response => {
-          proxy.$modal.msgSuccess("新增成功");
-          open.value = false;
-          getList();
-        });
-      }
-    }
-  });
-};
-
-getTreeselect();
-getList();
-</script>

@@ -1,3 +1,52 @@
+
+<script setup name="Online" lang="ts">
+import { forceLogout, list as initData } from "@/api/monitor/online";
+import { getCurrentInstance, ref } from "vue";
+
+const { proxy }:any = getCurrentInstance();
+
+const onlineList = ref([]);
+const loading = ref(true);
+const total = ref(0);
+const pageNum = ref(1);
+const pageSize = ref(10);
+
+const queryParams = ref({
+  ipaddr: undefined,
+  userName: undefined
+});
+
+/** 查询登录日志列表 */
+function getList() {
+  loading.value = true;
+  initData(queryParams.value).then((response:any) => {
+    onlineList.value = response.rows;
+    total.value = response.total;
+    loading.value = false;
+  });
+}
+/** 搜索按钮操作 */
+function handleQuery() {
+  pageNum.value = 1;
+  getList();
+}
+/** 重置按钮操作 */
+function resetQuery() {
+  proxy.resetForm("queryRef");
+  handleQuery();
+}
+/** 强退按钮操作 */
+function handleForceLogout(row: { userName: string; tokenId: string; }) {
+    proxy.$modal.confirm('是否确认强退名称为"' + row.userName + '"的用户?').then(function () {
+  return forceLogout(row.tokenId);
+  }).then(() => {
+    getList();
+    proxy.$modal.msgSuccess("删除成功");
+  }).catch(() => {});
+}
+
+getList();
+</script>
 <template>
    <div class="app-container">
       <el-form :model="queryParams" ref="queryRef" :inline="true" label-width="68px">
@@ -60,51 +109,3 @@
    </div>
 </template>
 
-<script setup name="Online" lang="ts">
-import { forceLogout, list as initData } from "@/api/monitor/online";
-import { getCurrentInstance, ref } from "vue";
-
-const { proxy }:any = getCurrentInstance();
-
-const onlineList = ref([]);
-const loading = ref(true);
-const total = ref(0);
-const pageNum = ref(1);
-const pageSize = ref(10);
-
-const queryParams = ref({
-  ipaddr: undefined,
-  userName: undefined
-});
-
-/** 查询登录日志列表 */
-function getList() {
-  loading.value = true;
-  initData(queryParams.value).then((response:any) => {
-    onlineList.value = response.rows;
-    total.value = response.total;
-    loading.value = false;
-  });
-}
-/** 搜索按钮操作 */
-function handleQuery() {
-  pageNum.value = 1;
-  getList();
-}
-/** 重置按钮操作 */
-function resetQuery() {
-  proxy.resetForm("queryRef");
-  handleQuery();
-}
-/** 强退按钮操作 */
-function handleForceLogout(row: { userName: string; tokenId: string; }) {
-    proxy.$modal.confirm('是否确认强退名称为"' + row.userName + '"的用户?').then(function () {
-  return forceLogout(row.tokenId);
-  }).then(() => {
-    getList();
-    proxy.$modal.msgSuccess("删除成功");
-  }).catch(() => {});
-}
-
-getList();
-</script>

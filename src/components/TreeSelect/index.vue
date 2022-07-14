@@ -1,35 +1,5 @@
 
 
-<template>
-  <div class="el-tree-select">
-    <el-select
-      style="width: 100%"
-      v-model="valueId"
-      ref="treeSelect"
-      :filterable="true"
-      :clearable="true"
-      @clear="clearHandle"
-      :filter-method="selectFilterData"
-      :placeholder="placeholder"
-    >
-      <el-option :value="valueId" :label="valueTitle">
-        <el-tree
-          id="tree-option"
-          ref="selectTree"
-          :accordion="accordion"
-          :data="options"
-          :props="objMap"
-          :node-key="objMap.value"
-          :expand-on-click-node="false"
-          :default-expanded-keys="defaultExpandedKey"
-          :filter-node-method="filterNode"
-          @node-click="handleNodeClick"
-        ></el-tree>
-      </el-option>
-    </el-select>
-  </div>
-</template>
-
 <script setup lang="ts">
 import { computed, getCurrentInstance, nextTick, onMounted, ref, watch } from "vue";
 const { proxy }:any = getCurrentInstance();
@@ -129,6 +99,36 @@ watch(valueId, () => {
   initHandle();
 })
 </script>
+<template>
+  <div class="el-tree-select">
+    <el-select
+      style="width: 100%"
+      v-model="valueId"
+      ref="treeSelect"
+      :filterable="true"
+      :clearable="true"
+      @clear="clearHandle"
+      :filter-method="selectFilterData"
+      :placeholder="placeholder"
+    >
+      <el-option :value="valueId" :label="valueTitle">
+        <el-tree
+          id="tree-option"
+          ref="selectTree"
+          :accordion="accordion"
+          :data="options"
+          :props="objMap"
+          :node-key="objMap.value"
+          :expand-on-click-node="false"
+          :default-expanded-keys="defaultExpandedKey"
+          :filter-node-method="filterNode"
+          @node-click="handleNodeClick"
+        ></el-tree>
+      </el-option>
+    </el-select>
+  </div>
+</template>
+
 
 <style lang='scss' scoped>
 @import "@/assets/styles/variables.module.scss";

@@ -9,31 +9,39 @@ import { defineStore } from 'pinia'
 // 匹配views里面所有的.vue文件
 const modules = import.meta.glob('./../../views/**/*.vue')
 
+interface stateProps {
+  routes:any[],
+  addRoutes:any[],
+  defaultRoutes:any[],
+  topbarRouters:any[],
+  sidebarRouters:any[]
+}
+
 const usePermissionStore = defineStore(
   'permission',
   {
-    state: () => ({
+    state: () => (<stateProps>{
       routes: [],
       addRoutes: [],
       defaultRoutes: [],
       topbarRouters: [],
       sidebarRouters: []
-    } as any),
+    } ),
     actions: {
-      setRoutes(routes: ConcatArray<{ path: string; component: any; hidden: boolean; children: { path: string; component: () => Promise<typeof import("*.vue")> }[]; redirect?: undefined } | { path: string; component: () => Promise<any>; hidden: boolean; children?: undefined; redirect?: undefined } | { path: string; component: any; redirect: string; children: { path: string; component: () => Promise<any>; name: string; meta: { title: string; icon: string; affix: boolean } }[]; hidden?: undefined } | { path: string; component: any; hidden: boolean; redirect: string; children: { path: string; component: () => Promise<any>; name: string; meta: { title: string; icon: string } }[] }>) {
+      setRoutes(routes:any[]) {
         this.addRoutes = routes
         this.routes = constantRoutes.concat(routes)
       },
-      setDefaultRoutes(routes: ConcatArray<{ path: string; component: any; hidden: boolean; children: { path: string; component: () => Promise<typeof import("*.vue")> }[]; redirect?: undefined } | { path: string; component: () => Promise<any>; hidden: boolean; children?: undefined; redirect?: undefined } | { path: string; component: any; redirect: string; children: { path: string; component: () => Promise<any>; name: string; meta: { title: string; icon: string; affix: boolean } }[]; hidden?: undefined } | { path: string; component: any; hidden: boolean; redirect: string; children: { path: string; component: () => Promise<any>; name: string; meta: { title: string; icon: string } }[] }>) {
+      setDefaultRoutes(routes: any[]) {
         this.defaultRoutes = constantRoutes.concat(routes)
       },
       setTopbarRoutes(routes: never[]) {
         this.topbarRouters = routes
       },
-      setSidebarRouters(routes: ({ path: string; component: any; hidden: boolean; children: { path: string; component: () => Promise<typeof import("*.vue")> }[]; redirect?: undefined } | { path: string; component: () => Promise<any>; hidden: boolean; children?: undefined; redirect?: undefined } | { path: string; component: any; redirect: string; children: { path: string; component: () => Promise<any>; name: string; meta: { title: string; icon: string; affix: boolean } }[]; hidden?: undefined } | { path: string; component: any; hidden: boolean; redirect: string; children: { path: string; component: () => Promise<any>; name: string; meta: { title: string; icon: string } }[] })[]) {
+      setSidebarRouters(routes:any[]) {
         this.sidebarRouters = routes
       },
-      generateRoutes(roles: undefined) {
+      generateRoutes(roles?: any[]) {
         return new Promise(resolve => {
           // 向后端请求路由数据
           getRouters().then(res => {
@@ -42,7 +50,7 @@ const usePermissionStore = defineStore(
             const defaultData = JSON.parse(JSON.stringify(res.data))
             const sidebarRoutes = filterAsyncRouter(sdata)
             const rewriteRoutes = filterAsyncRouter(rdata, false, true)
-            const defaultRoutes = filterAsyncRouter(defaultData)
+            const defaultRoutes:any = filterAsyncRouter(defaultData)
             const asyncRoutes = filterDynamicRoutes(dynamicRoutes)
             asyncRoutes.forEach(route => { router.addRoute(route) })
             this.setRoutes(rewriteRoutes)

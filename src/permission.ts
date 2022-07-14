@@ -14,7 +14,7 @@ NProgress.configure({ showSpinner: false });
 
 const whiteList = ['/login', '/auth-redirect', '/bind', '/register'];
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to:any, from, next) => {
   NProgress.start()
   if (getToken()) {
     to.meta.title && useSettingsStore().setTitle(to.meta.title)
@@ -28,7 +28,7 @@ router.beforeEach((to, from, next) => {
         // 判断当前用户是否已拉取完user_info信息
         useUserStore().getInfo().then(() => {
           isRelogin.show = false
-          usePermissionStore().generateRoutes().then((accessRoutes: any[]) => {
+          usePermissionStore().generateRoutes().then((accessRoutes: any) => {
             // 根据roles权限生成可访问的路由表
             accessRoutes.forEach((route: RouteRecordRaw) => {
               if (!isHttp(route.path)) {

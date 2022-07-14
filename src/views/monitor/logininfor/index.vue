@@ -1,3 +1,92 @@
+
+
+<script setup name="Logininfor" lang="ts">
+import { list, delLogininfor, cleanLogininfor } from "@/api/monitor/logininfor";
+import { getCurrentInstance, ref } from "vue";
+
+const { proxy }:any = getCurrentInstance();
+const { sys_common_status } = proxy.useDict("sys_common_status");
+
+const logininforList = ref([]);
+const loading = ref(true);
+const showSearch = ref(true);
+const ids = ref([]);
+const multiple = ref(true);
+const total = ref(0);
+const dateRange = ref([]);
+const defaultSort = ref({ prop: "loginTime", order: "descending" });
+
+// 查询参数
+const queryParams = ref({
+  pageNum: 1,
+  pageSize: 10,
+  ipaddr: undefined,
+  userName: undefined,
+  status: undefined,
+  orderByColumn: undefined,
+  isAsc: undefined
+});
+
+/** 查询登录日志列表 */
+function getList() {
+  loading.value = true;
+  list(proxy.addDateRange(queryParams.value, dateRange.value)).then((response:any) => {
+    logininforList.value = response.rows;
+    total.value = response.total;
+    loading.value = false;
+  });
+}
+/** 搜索按钮操作 */
+function handleQuery() {
+  queryParams.value.pageNum = 1;
+  getList();
+}
+/** 重置按钮操作 */
+function resetQuery() {
+  dateRange.value = [];
+  proxy.resetForm("queryRef");
+  proxy.$refs["logininforRef"].sort(defaultSort.value.prop, defaultSort.value.order);
+  handleQuery();
+}
+/** 多选框选中数据 */
+function handleSelectionChange(selection: { map: (arg0: (item: any) => any) => never[]; length: any; }) {
+  ids.value = selection.map(item => item.infoId);
+  multiple.value = !selection.length;
+}
+/** 排序触发事件 */
+function handleSortChange(column: { prop: undefined; order: undefined; }, prop: any, order: any) {
+  queryParams.value.orderByColumn = column.prop;
+  queryParams.value.isAsc = column.order;
+  getList();
+}
+/** 删除按钮操作 */
+function handleDelete(row: { infoId: never[]; }) {
+  const infoIds:any = row.infoId || ids.value;
+  proxy.$modal.confirm('是否确认删除访问编号为"' + infoIds + '"的数据项?').then(function () {
+    return delLogininfor(infoIds);
+  }).then(() => {
+    getList();
+    proxy.$modal.msgSuccess("删除成功");
+  }).catch(() => {});
+}
+/** 清空按钮操作 */
+function handleClean() {
+  proxy.$modal.confirm("是否确认清空所有登录日志数据项?").then(function () {
+    return cleanLogininfor();
+  }).then(() => {
+    getList();
+    proxy.$modal.msgSuccess("清空成功");
+  }).catch(() => {});
+}
+/** 导出按钮操作 */
+function handleExport() {
+  proxy.download("monitor/logininfor/export", {
+    ...queryParams.value,
+  }, `config_${new Date().getTime()}.xlsx`);
+}
+
+getList();
+</script>
 <template>
    <div class="app-container">
       <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
@@ -113,90 +202,3 @@
    </div>
 </template>
 
-<script setup name="Logininfor" lang="ts">
-import { list, delLogininfor, cleanLogininfor } from "@/api/monitor/logininfor";
-import { getCurrentInstance, ref } from "vue";
-
-const { proxy }:any = getCurrentInstance();
-const { sys_common_status } = proxy.useDict("sys_common_status");
-
-const logininforList = ref([]);
-const loading = ref(true);
-const showSearch = ref(true);
-const ids = ref([]);
-const multiple = ref(true);
-const total = ref(0);
-const dateRange = ref([]);
-const defaultSort = ref({ prop: "loginTime", order: "descending" });
-
-// 查询参数
-const queryParams = ref({
-  pageNum: 1,
-  pageSize: 10,
-  ipaddr: undefined,
-  userName: undefined,
-  status: undefined,
-  orderByColumn: undefined,
-  isAsc: undefined
-});
-
-/** 查询登录日志列表 */
-function getList() {
-  loading.value = true;
-  list(proxy.addDateRange(queryParams.value, dateRange.value)).then((response:any) => {
-    logininforList.value = response.rows;
-    total.value = response.total;
-    loading.value = false;
-  });
-}
-/** 搜索按钮操作 */
-function handleQuery() {
-  queryParams.value.pageNum = 1;
-  getList();
-}
-/** 重置按钮操作 */
-function resetQuery() {
-  dateRange.value = [];
-  proxy.resetForm("queryRef");
-  proxy.$refs["logininforRef"].sort(defaultSort.value.prop, defaultSort.value.order);
-  handleQuery();
-}
-/** 多选框选中数据 */
-function handleSelectionChange(selection: { map: (arg0: (item: any) => any) => never[]; length: any; }) {
-  ids.value = selection.map(item => item.infoId);
-  multiple.value = !selection.length;
-}
-/** 排序触发事件 */
-function handleSortChange(column: { prop: undefined; order: undefined; }, prop: any, order: any) {
-  queryParams.value.orderByColumn = column.prop;
-  queryParams.value.isAsc = column.order;
-  getList();
-}
-/** 删除按钮操作 */
-function handleDelete(row: { infoId: never[]; }) {
-  const infoIds:any = row.infoId || ids.value;
-  proxy.$modal.confirm('是否确认删除访问编号为"' + infoIds + '"的数据项?').then(function () {
-    return delLogininfor(infoIds);
-  }).then(() => {
-    getList();
-    proxy.$modal.msgSuccess("删除成功");
-  }).catch(() => {});
-}
-/** 清空按钮操作 */
-function handleClean() {
-  proxy.$modal.confirm("是否确认清空所有登录日志数据项?").then(function () {
-    return cleanLogininfor();
-  }).then(() => {
-    getList();
-    proxy.$modal.msgSuccess("清空成功");
-  }).catch(() => {});
-}
-/** 导出按钮操作 */
-function handleExport() {
-  proxy.download("monitor/logininfor/export", {
-    ...queryParams.value,
-  }, `config_${new Date().getTime()}.xlsx`);
-}
-
-getList();
-</script>

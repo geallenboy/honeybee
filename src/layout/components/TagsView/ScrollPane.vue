@@ -1,13 +1,3 @@
-<template>
-  <el-scrollbar
-    ref="scrollContainer"
-    :vertical="false"
-    class="scroll-container"
-    @wheel.prevent="handleScroll"
-  >
-    <slot />
-  </el-scrollbar>
-</template>
 
 <script setup lang="ts">
 import useTagsViewStore from '@/store/modules/tagsView'
@@ -30,7 +20,7 @@ function handleScroll(e:any) {
   const $scrollWrapper = scrollWrapper.value;
   $scrollWrapper.scrollLeft = $scrollWrapper.scrollLeft + eventDelta / 4
 }
-const emits = defineEmits()
+const emits = defineEmits<{(e:'scroll'):void}>()
 const emitScroll = () => {
   emits('scroll')
 }
@@ -89,6 +79,17 @@ defineExpose({
   moveToTarget,
 })
 </script>
+<template>
+  <el-scrollbar
+    ref="scrollContainer"
+    :vertical="false"
+    class="scroll-container"
+    @wheel.prevent="handleScroll"
+  >
+    <slot />
+  </el-scrollbar>
+</template>
+
 
 <style lang='scss' scoped>
 .scroll-container {
