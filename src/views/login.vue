@@ -10,7 +10,7 @@ import { getCurrentInstance, ref } from "vue";
 const userStore = useUserStore()
 const router = useRouter();
 const { proxy }:any = getCurrentInstance();
-
+console.log(router,888)
 const loginForm:any = ref({
   username: "admin",
   password: "admin123",

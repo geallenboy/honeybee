@@ -27,13 +27,13 @@ function goTarget(url:string) {
             type="primary"
             icon="Cloudy"
             plain
-            @click="goTarget('https://gitee.com/y_project/RuoYi-Vue')"
+            @click="goTarget('https://')"
             >访问码云</el-button
           >
           <el-button
             icon="HomeFilled"
             plain
-            @click="goTarget('http://ruoyi.vip')"
+            @click="goTarget('http://')"
             >访问主页</el-button
           >
         </p>
