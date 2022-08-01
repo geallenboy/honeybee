@@ -4,13 +4,13 @@
 </p>
 
 
-## honeybee-vite-vue3
+## honeybee-vite3-vue3
 
-vite3项目构建 [github项目分支地址](https://github.com/geallenboy/honeybee/tree/honeybee-vite-vue3)
+vite3项目构建 [github项目分支地址](https://github.com/geallenboy/honeybee/tree/honeybee-vite3-vue3)
 
-## honeybee-vite-react18
+## honeybee-vite3-react18
 
-vite3项目构建 [github项目分支地址](https://github.com/geallenboy/honeybee/tree/honeybee-vite-react18)
+vite3项目构建 [github项目分支地址](https://github.com/geallenboy/honeybee/tree/honeybee-vite3-react18)
 
 ## honeybee-webpack-vue3
 
@@ -24,43 +24,36 @@ webpack5项目构建 [github项目分支地址](https://github.com/geallenboy/ho
 
 ### 获取项目
 
-#### 1. 获取 honeybee-microservice
+
+#### 获取 honeybee-vite3-vue3代码分支
 
 ```sh
 
-git clone -b honeybee-microservice git@github.com:geallenboy/honeybee.git honeybee-microservice
+git clone -b honeybee-vite-vue3 git@github.com:geallenboy/honeybee.git honeybee-vite3-vue3
 
 ```
 
-#### 获取 honeybee-vite-vue3代码分支
+#### 获取 honeybee-vite3-react18代码分支
 
 ```sh
 
-git clone -b honeybee-vite-vue3 git@github.com:geallenboy/honeybee.git honeybee-vite-vue3
+git clone -b honeybee-vite-react18 git@github.com:geallenboy/honeybee.git honeybee-vite3-react18
 
 ```
 
-#### 获取 honeybee-vite-react18代码分支
+#### 获取 honeybee-webpack5-vue3代码分支
 
 ```sh
 
-git clone -b honeybee-vite-react18 git@github.com:geallenboy/honeybee.git honeybee-vite-react18
+git clone -b honeybee-webpack5-vue3 git@github.com:geallenboy/honeybee.git honeybee-webpack5-vue3
 
 ```
 
-#### 获取 honeybee-webpack-vue3代码分支
+#### 获取 honeybee-webpack5-react17代码分支
 
 ```sh
 
-git clone -b honeybee-webpack-vue3 git@github.com:geallenboy/honeybee.git honeybee-webpack-vue3
-
-```
-
-#### 获取 honeybee-webpack-react17代码分支
-
-```sh
-
-git clone -b honeybee-webpack-react17 git@github.com:geallenboy/honeybee.git honeybee-webpack-react17
+git clone -b honeybee-webpack5-react17 git@github.com:geallenboy/honeybee.git honeybee-webpack5-react17
 
 ```
 
