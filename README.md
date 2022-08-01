@@ -10,11 +10,11 @@ qiankun项目构建 [github项目分支地址](https://github.com/geallenboy/hon
 
 ## honeybee-vite-vue3
 
-vite2项目构建 [github项目分支地址](https://github.com/geallenboy/honeybee/tree/honeybee-vite-vue3)
+vite3项目构建 [github项目分支地址](https://github.com/geallenboy/honeybee/tree/honeybee-vite-vue3)
 
 ## honeybee-vite-react18
 
-vite2项目构建 [github项目分支地址](https://github.com/geallenboy/honeybee/tree/honeybee-vite-react18)
+vite3项目构建 [github项目分支地址](https://github.com/geallenboy/honeybee/tree/honeybee-vite-react18)
 
 ## honeybee-webpack-vue3
 
