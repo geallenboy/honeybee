@@ -4,10 +4,6 @@
 </p>
 
 
-## honeybee-microservice
-
-qiankun项目构建 [github项目分支地址](https://github.com/geallenboy/honeybee/tree/honeybee-microservice)
-
 ## honeybee-vite-vue3
 
 vite3项目构建 [github项目分支地址](https://github.com/geallenboy/honeybee/tree/honeybee-vite-vue3)
